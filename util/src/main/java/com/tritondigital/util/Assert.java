@@ -2,15 +2,14 @@ package com.tritondigital.util;
 
 import android.text.TextUtils;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.ComparisonFailure;
-
+//import junit.framework.AssertionFailedError;
+//import junit.framework.ComparisonFailure;
 
 /**
  * Does assertions. Wraps Android class but replaces the assert by a
  * log when compiled in debug mode.
  *
- * @sa http://developer.android.com/reference/junit/framework/Assert.html
+ * @see http://developer.android.com/reference/junit/framework/Assert.html
  */
 @SuppressWarnings("unused")
 public final class Assert {

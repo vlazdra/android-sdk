@@ -10,15 +10,18 @@ android {
         targetSdkVersion TARGET_SDK_VERSION.toInteger()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles rootProject.file('proguard.txt')
         }
     }
+
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+
     lintOptions {
         abortOnError false
     }
@@ -28,10 +31,10 @@ dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     api project(':util')
 
-    androidTestImplementation 'com.android.support.test:runner:0.3'
-    androidTestImplementation 'com.android.support.test:rules:0.3'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2'
-    androidTestImplementation 'org.hamcrest:hamcrest-library:1.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
 }
 
 
