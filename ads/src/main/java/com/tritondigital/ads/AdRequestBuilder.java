@@ -15,11 +15,11 @@ import java.util.Locale;
 
 /**
  * Helps create on-demand ad request URLs.
- *
+ * <p>
  * This class is based on <i>https://userguides.tritondigital.com/spc/ondemand/</i>.
  * The user tracking ID is automatically added and there is an option to use the
  * device location manager for location targeting.
- *
+ * <p>
  * A basic validation is done when adding a query parameter.
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -30,12 +30,12 @@ public final class AdRequestBuilder {
 
     /**
      * _int_ - Station ID
-     *
+     * <p>
      * Either AdRequestBuilder.STATION_ID or AdRequestBuilder.STATION_NAME must be specified when calling the
      * On-Demand Ad Request Service. While both are supported, it is strongly recommended that clients
      * use AdRequestBuilder.STATION_NAME. If both are provided, AdRequestBuilder.STATION_NAME is used (there is
      * no validation check that AdRequestBuilder.STATION_ID matches the name).
-     *
+     * <p>
      * Triton Digital assigns station IDs and names when setting up a station. Station names are
      * case-sensitive.
      */
@@ -44,6 +44,7 @@ public final class AdRequestBuilder {
 
     /**
      * _String_ - Station Name
+     *
      * @copydetails STATION_ID
      */
     public static final String STATION_NAME = "stn";
@@ -53,10 +54,14 @@ public final class AdRequestBuilder {
      */
     public static final String TYPE = "type";
 
-    /** Possible AdRequestBuilder.TYPE value */
+    /**
+     * Possible AdRequestBuilder.TYPE value
+     */
     public static final String TYPE_VALUE_PREROLL = "preroll";
 
-    /** @copybrief TYPE_VALUE_PREROLL */
+    /**
+     * @copybrief TYPE_VALUE_PREROLL
+     */
     public static final String TYPE_VALUE_MIDROLL = "midroll";
 
 
@@ -64,132 +69,208 @@ public final class AdRequestBuilder {
     // 3.3.4 Rendering Formats (private for now)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /** Supported render formats for the On-Demand Ad Service */
+    /**
+     * Supported render formats for the On-Demand Ad Service
+     */
     public static final String RENDERING_FORMAT = "fmt";
 
-    /** text/xml; charset=UTF-8 DAAST 1.0 */
+    /**
+     * text/xml; charset=UTF-8 DAAST 1.0
+     */
     public static final String RENDERING_FORMAT_VALUE_DAAST = "daast";
 
-    /** text/xml; charset=UTF-8 VAST 2.0 */
-    public static final String RENDERING_FORMAT_VALUE_VAST  = "vast";
+    /**
+     * text/xml; charset=UTF-8 VAST 2.0
+     */
+    public static final String RENDERING_FORMAT_VALUE_VAST = "vast";
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 3.3.5 Asset Constraints
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /** _String (comma-separated list)_ - Asset Type */
+    /**
+     * _String (comma-separated list)_ - Asset Type
+     */
     public static final String ASSET_TYPE = "at";
 
-    /** Possible AdRequestBuilder.ASSET_TYPE value */
+    /**
+     * Possible AdRequestBuilder.ASSET_TYPE value
+     */
     public static final String ASSET_TYPE_VALUE_AUDIO = "audio";
 
-    /** @copybrief ASSET_TYPE_VALUE_AUDIO */
+    /**
+     * @copybrief ASSET_TYPE_VALUE_AUDIO
+     */
     public static final String ASSET_TYPE_VALUE_VIDEO = "video";
 
-    /** _int_ - Min file size in KB */
+    /**
+     * _int_ - Min file size in KB
+     */
     public static final String MIN_FILE_SIZE = "minsz";
 
-    /** _int_ - Max file size in KB */
+    /**
+     * _int_ - Max file size in KB
+     */
     public static final String MAX_FILE_SIZE = "maxsz";
 
 
-    /** _String (comma-separated list)_ - File Format */
+    /**
+     * _String (comma-separated list)_ - File Format
+     */
     public static final String FILE_FORMAT = "cntnr";
 
-    /** Possible AdRequestBuilder.FILE_FORMAT value */
+    /**
+     * Possible AdRequestBuilder.FILE_FORMAT value
+     */
     public static final String FILE_FORMAT_VALUE_MP3 = "mp3";
 
-    /** @copybrief FILE_FORMAT_VALUE_MP3*/
+    /**
+     * @copybrief FILE_FORMAT_VALUE_MP3
+     */
     public static final String FILE_FORMAT_VALUE_ADTS = "adts";
 
-    /** @copybrief FILE_FORMAT_VALUE_MP3*/
+    /**
+     * @copybrief FILE_FORMAT_VALUE_MP3
+     */
     public static final String FILE_FORMAT_VALUE_FLV = "flv";
 
-    /** @copybrief FILE_FORMAT_VALUE_MP3*/
+    /**
+     * @copybrief FILE_FORMAT_VALUE_MP3
+     */
     public static final String FILE_FORMAT_VALUE_MP4 = "mp4";
 
 
-    /** _int_ - Min duration in seconds */
+    /**
+     * _int_ - Min duration in seconds
+     */
     public static final String MIN_DURATION = "mindur";
 
-    /** _int_ - Max duration in seconds */
+    /**
+     * _int_ - Max duration in seconds
+     */
     public static final String MAX_DURATION = "maxdur";
 
 
-    /** _int_ - Min bitrate in kbps */
+    /**
+     * _int_ - Min bitrate in kbps
+     */
     public static final String MIN_BITRATE = "mindbr";
 
-    /** _int_ - Max bitrate in kbps */
+    /**
+     * _int_ - Max bitrate in kbps
+     */
     public static final String MAX_BITRATE = "maxbr";
 
 
-    /** _int_ - Video min width in density-independent pixels */
+    /**
+     * _int_ - Video min width in density-independent pixels
+     */
     public static final String VIDEO_MIN_WIDTH = "minw";
 
-    /** _int_ - Video max width in density-independent pixels */
+    /**
+     * _int_ - Video max width in density-independent pixels
+     */
     public static final String VIDEO_MAX_WIDTH = "maxw";
 
 
-    /** _int_ - Video min height in density-independent pixels */
+    /**
+     * _int_ - Video min height in density-independent pixels
+     */
     public static final String VIDEO_MIN_HEIGHT = "minh";
 
-    /** _int_ - Video max height in density-independent pixels */
+    /**
+     * _int_ - Video max height in density-independent pixels
+     */
     public static final String VIDEO_MAX_HEIGHT = "maxdh";
 
 
-    /** _String (comma-separated list)_ - Audio codec */
+    /**
+     * _String (comma-separated list)_ - Audio codec
+     */
     public static final String AUDIO_CODEC = "acodec";
 
-    /** Possible AdRequestBuilder.AUDIO_CODEC value */
+    /**
+     * Possible AdRequestBuilder.AUDIO_CODEC value
+     */
     public static final String AUDIO_CODEC_VALUE_MP3 = "mp3";
 
-    /** @copybrief AUDIO_CODEC_VALUE_MP3 */
+    /**
+     * @copybrief AUDIO_CODEC_VALUE_MP3
+     */
     public static final String AUDIO_CODEC_VALUE_AAC_HEV1 = "aac_hev1";
 
-    /** @copybrief AUDIO_CODEC_VALUE_MP3 */
+    /**
+     * @copybrief AUDIO_CODEC_VALUE_MP3
+     */
     public static final String AUDIO_CODEC_VALUE_AAC_HEV2 = "aac_hev2";
 
-    /** @copybrief AUDIO_CODEC_VALUE_MP3 */
+    /**
+     * @copybrief AUDIO_CODEC_VALUE_MP3
+     */
     public static final String AUDIO_CODEC_VALUE_AAC_LC = "aac_lc";
 
-    /** _int_ - Audio min channels */
+    /**
+     * _int_ - Audio min channels
+     */
     public static final String AUDIO_MIN_CHANNELS = "minach";
 
-    /** _int_ - Audio max channels */
+    /**
+     * _int_ - Audio max channels
+     */
     public static final String AUDIO_MAX_CHANNELS = "maxach";
 
-    /** _String (comma-separated list)_ - Audio Sample Rates in Hz */
+    /**
+     * _String (comma-separated list)_ - Audio Sample Rates in Hz
+     */
     public static final String AUDIO_SAMPLE_RATE = "asr";
 
 
-    /** _String (comma-separated list)_ - Video codec */
+    /**
+     * _String (comma-separated list)_ - Video codec
+     */
     public static final String VIDEO_CODEC = "vcodec";
 
-    /** Possible AdRequestBuilder.VIDEO_CODEC value */
+    /**
+     * Possible AdRequestBuilder.VIDEO_CODEC value
+     */
     public static final String VIDEO_CODEC_VALUE_H264 = "h264";
 
-    /** @copybrief VIDEO_CODEC_VALUE_H264 */
+    /**
+     * @copybrief VIDEO_CODEC_VALUE_H264
+     */
     public static final String VIDEO_CODEC_VALUE_ON2_VP6 = "on2_vp6";
 
 
-    /** _String (comma-separated list)_ - Video Aspect Ratio */
+    /**
+     * _String (comma-separated list)_ - Video Aspect Ratio
+     */
     public static final String VIDEO_ASPECT_RATIO = "vaspect";
 
-    /** Possible AdRequestBuilder.VIDEO_ASPECT_RATIO value */
+    /**
+     * Possible AdRequestBuilder.VIDEO_ASPECT_RATIO value
+     */
     public static final String VIDEO_ASPECT_RATIO_VALUE_4_3 = "4:3";
 
-    /** @copybrief VIDEO_ASPECT_RATIO_VALUE_4_3 */
-    public static final String VIDEO_ASPECT_RATIO_VALUE_16_9  = "16:9";
+    /**
+     * @copybrief VIDEO_ASPECT_RATIO_VALUE_4_3
+     */
+    public static final String VIDEO_ASPECT_RATIO_VALUE_16_9 = "16:9";
 
-    /** @copybrief VIDEO_ASPECT_RATIO_VALUE_4_3 */
+    /**
+     * @copybrief VIDEO_ASPECT_RATIO_VALUE_4_3
+     */
     public static final String VIDEO_ASPECT_RATIO_VALUE_OTHER = "other";
 
 
-    /** _float_ - Video min frame rate */
+    /**
+     * _float_ - Video min frame rate
+     */
     public static final String VIDEO_MIN_FRAME_RATE = "minfps";
 
-    /** _float_ - Video max frame rate */
+    /**
+     * _float_ - Video max frame rate
+     */
     public static final String VIDEO_MAX_FRAME_RATE = "maxfps";
 
 
@@ -199,23 +280,23 @@ public final class AdRequestBuilder {
 
     /**
      * _float_ - Latitude (-90.0f to 90.0f)
-     *
+     * <p>
      * Not required individually. If using, you must specify AdRequestBuilder.LONGITUDE.
      */
     public static final String LATITUDE = "lat";
 
     /**
      * _float_ - Longitude (-180.0f to 180.0f)
-     *
+     * <p>
      * Not required individually. If using, you must specify AdRequestBuilder.LATITUDE.
      */
     public static final String LONGITUDE = "long";
 
     /**
      * _String_ - Postal/ZIP code
-     *
+     * <p>
      * Valid postal or ZIP code, without spaces. E.g., 89040 or H3G1R8.
-     *
+     * <p>
      * Not required individually. If using, however, we recommend that you
      * specify AdRequestBuilder.COUNTRY_CODE.
      */
@@ -225,7 +306,7 @@ public final class AdRequestBuilder {
      * _String_ - Country code
      * (<a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">
      * ISO 3166-1 alpha-2</a>)
-     *
+     * <p>
      * Not required individually. If using, however, we recommend that you
      * specify AdRequestBuilder.POSTAL_CODE.
      */
@@ -238,7 +319,7 @@ public final class AdRequestBuilder {
 
     /**
      * _int_ - Age (1 to 125)
-     *
+     * <p>
      * Clients/players must specify only one of AdRequestBuilder.AGE,
      * AdRequestBuilder.DATE_OF_BIRTH or AdRequestBuilder.YEAR_OF_BIRTH.
      */
@@ -246,28 +327,36 @@ public final class AdRequestBuilder {
 
     /**
      * _String_ - Date of birth formatted as "YYYY-MM-DD"
+     *
      * @copydetails AGE
      */
     public static final String DATE_OF_BIRTH = "dob";
 
     /**
      * _int_ - Year of birth (1900 to 2005)
+     *
      * @copydetails AGE
      */
     public static final String YEAR_OF_BIRTH = "yob";
 
-    /** _char_ - Gender ('m' or 'f') */
+    /**
+     * _char_ - Gender ('m' or 'f')
+     */
     public static final String GENDER = "gender";
 
-    /** Possible AdRequestBuilder.GENDER value */
+    /**
+     * Possible AdRequestBuilder.GENDER value
+     */
     public static final char GENDER_VALUE_FEMALE = 'f';
 
-    /** @copybrief GENDER_VALUE_FEMALE */
+    /**
+     * @copybrief GENDER_VALUE_FEMALE
+     */
     public static final char GENDER_VALUE_MALE = 'm';
 
     /**
      * _int_ - Custom segment ID (1 to 1000000)
-     *
+     * <p>
      * Broadcasters that want to differentiate their listeners into custom
      * broadcaster-specific segments may use the Custom Segment Targeting
      * capability of Tap.
@@ -285,17 +374,16 @@ public final class AdRequestBuilder {
 
     /**
      * _String (comma-separated list)_ - Banner capabilities
-     *
+     * <p>
      * Players can provide details on their level of support for banners, such
      * as banner sizes and formats.
-     *
+     * <p>
      * The ordering of the capability formats is not important.
      *
      * @note Before attempting to use player capability targeting, please contact
      * the Triton Digital Support Team to enable Player Capability Targeting for
      * your broadcaster. Currently, Player Capability Targeting only works with
      * Tap advertising.
-     *
      * @par Supported Formats
      *
      * <table>
@@ -322,9 +410,8 @@ public final class AdRequestBuilder {
     public static final String BANNERS = "banners";
 
 
-
     //TD Advertisement Guide  version
-    public static final String ADS_GUIDE_VERSION_KEY   = "version";
+    public static final String ADS_GUIDE_VERSION_KEY = "version";
     public static final String ADS_GUIDE_VERSION_VALUE = "1.5.1";
 
 
@@ -345,8 +432,7 @@ public final class AdRequestBuilder {
     /**
      * Returns the ad server host
      */
-    public String getHost()
-    {
+    public String getHost() {
         return (mHostUri == null) ? null : mHostUri.toString();
     }
 
@@ -417,7 +503,7 @@ public final class AdRequestBuilder {
 
     /**
      * Adds a key/value pair to the URL query parameters.
-     *
+     * <p>
      * The key and value will be encoded.
      */
     public AdRequestBuilder addQueryParameter(String key, String value) {
@@ -590,16 +676,15 @@ public final class AdRequestBuilder {
 
     /**
      * Enables the location tracking using the device's location manager.
-     *
+     * <p>
      * Enabling this feature will overwrite the AdRequestBuilder.LATITUDE
      * and AdRequestBuilder.LONGITUDE query parameters.
-     *
+     * <p>
      * See <a href="http://developer.android.com/reference/android/location/LocationManager.html">
      * Android location manager</a>.
      *
      * @par AndroidManifest.xml Permissions
-     * @code{.xml}
-     *      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+     * @code{.xml} <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
      * @endcode
      */
     @SuppressWarnings("JavaDoc")
@@ -619,15 +704,14 @@ public final class AdRequestBuilder {
     /**
      * Set the Ttags for the Requested URL
      */
-    public AdRequestBuilder addTtags( String[] ttags )
-    {
+    public AdRequestBuilder addTtags(String[] ttags) {
         mTtags = ttags.clone();
         return this;
     }
 
     /**
      * Returns an URL from the previously set data.
-     *
+     * <p>
      * This method also refreshes the user tracking id and the location.
      */
     public String build() {
@@ -666,23 +750,17 @@ public final class AdRequestBuilder {
         }
 
         // Mandatory fields
-        if (mQueryParams.get(BANNERS) == null)
-        {
+        if (mQueryParams.get(BANNERS) == null) {
             uriBuilder.appendQueryParameter(BANNERS, "none");
         }
         uriBuilder.appendQueryParameter("tdsdk", "android-" + SdkUtil.VERSION);
-        uriBuilder.appendQueryParameter("lsid",  TrackingUtil.getTrackingId(mContext));
+        uriBuilder.appendQueryParameter("lsid", TrackingUtil.getTrackingId(mContext));
         uriBuilder.appendQueryParameter(ADS_GUIDE_VERSION_KEY, ADS_GUIDE_VERSION_VALUE);
-
-
-
-
 
         String adRequest = uriBuilder.build().toString();
 
-        if ( mTtags != null && mTtags.length >0)
-        {
-            String allTtags  = TextUtils.join(",",mTtags);
+        if (mTtags != null && mTtags.length > 0) {
+            String allTtags = TextUtils.join(",", mTtags);
             adRequest = adRequest + "&ttag=" + allTtags;
         }
 

@@ -5,43 +5,44 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.media.MediaRouter;
 
-import com.tritondigital.util.*;
+import androidx.annotation.NonNull;
+import androidx.mediarouter.media.MediaRouter;
+
+import com.tritondigital.util.AnalyticsTracker;
+import com.tritondigital.util.Log;
+import com.tritondigital.util.NetworkUtil;
+import com.tritondigital.util.SdkUtil;
 
 import java.io.Serializable;
-import java.util.*;
 
 
 /**
  * Plays a station provided by Triton Digital.
- *
  */
 @SuppressWarnings("UnusedDeclaration")
-public class StationPlayer extends MediaPlayer
-{
+public class StationPlayer extends MediaPlayer {
     // Public settings
-    public static final String SETTINGS_STATION_BROADCASTER                 = PlayerConsts.STATION_BROADCASTER;
-    public static final String SETTINGS_STATION_MOUNT                       = PlayerConsts.STATION_MOUNT;
-    public static final String SETTINGS_STATION_NAME                        = PlayerConsts.STATION_NAME;
-    public static final String SETTINGS_TRANSPORT                           = PlayerConsts.TRANSPORT;
-    public static final String SETTINGS_AUTH_TOKEN                          = PlayerConsts.AUTH_TOKEN;
-    public static final String SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED = PlayerConsts.TARGETING_LOCATION_TRACKING_ENABLED;
-    public static final String SETTINGS_TARGETING_PARAMS                    = PlayerConsts.TARGETING_PARAMS;
-    public static final String SETTINGS_MEDIA_ITEM_METADATA                 = PlayerConsts.MEDIA_ITEM_METADATA;
-    public static final String SETTINGS_LOW_DELAY                           = PlayerConsts.LOW_DELAY;
-    public static final String SETTINGS_TTAGS                               = PlayerConsts.TTAGS;
+    public static final String SETTINGS_STATION_BROADCASTER = PlayerConstants.STATION_BROADCASTER;
+    public static final String SETTINGS_STATION_MOUNT = PlayerConstants.STATION_MOUNT;
+    public static final String SETTINGS_STATION_NAME = PlayerConstants.STATION_NAME;
+    public static final String SETTINGS_TRANSPORT = PlayerConstants.TRANSPORT;
+    public static final String SETTINGS_AUTH_TOKEN = PlayerConstants.AUTH_TOKEN;
+    public static final String SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED = PlayerConstants.TARGETING_LOCATION_TRACKING_ENABLED;
+    public static final String SETTINGS_TARGETING_PARAMS = PlayerConstants.TARGETING_PARAMS;
+    public static final String SETTINGS_MEDIA_ITEM_METADATA = PlayerConstants.MEDIA_ITEM_METADATA;
+    public static final String SETTINGS_LOW_DELAY = PlayerConstants.LOW_DELAY;
+    public static final String SETTINGS_TTAGS = PlayerConstants.TTAGS;
 
 
     private static final String TAG = Log.makeTag("StationPlayer");
 
-    private StreamPlayer            mStreamPlayer;
+    private StreamPlayer mStreamPlayer;
     private StationConnectionClient mConnectionClient;
-    private boolean                 mResetConnectionClient;
-    private String                  mUserAgent;
-    private MediaRouter.RouteInfo   mMediaRoute;
-    private String                  mLiveStreamingUrl;
+    private boolean mResetConnectionClient;
+    private String mUserAgent;
+    private MediaRouter.RouteInfo mMediaRoute;
+    private String mLiveStreamingUrl;
 
     /**
      * Constructor
@@ -80,7 +81,8 @@ public class StationPlayer extends MediaPlayer
 
     // Won't be called because isPausable() --> false
     @Override
-    protected void internalPause() {}
+    protected void internalPause() {
+    }
 
 
     @Override
@@ -122,37 +124,33 @@ public class StationPlayer extends MediaPlayer
     /**
      * Returns the Side Band MetaData Url.
      */
-    public String getSideBandMetadataUrl()
-    {
+    public String getSideBandMetadataUrl() {
         return mConnectionClient.getSideBandMetadataUrl();
     }
 
     /**
      * Returns the Stream URL to cast to Google Cast devices.
      */
-    public String getCastStreamingUrl(){
+    public String getCastStreamingUrl() {
         String castUrl = mConnectionClient.getCastStreamingUrl();
-        if(castUrl == null)
-        {
+        if (castUrl == null) {
             return null;
         }
 
-        if(mLiveStreamingUrl != null)
-        {
+        if (mLiveStreamingUrl != null) {
             Uri uri = Uri.parse(mLiveStreamingUrl);
             Uri sbmUri = Uri.parse(getSideBandMetadataUrl());
-            String sbmId = (sbmUri==null)?null: sbmUri.getQueryParameter("sbmid");
+            String sbmId = (sbmUri == null) ? null : sbmUri.getQueryParameter("sbmid");
 
-            Uri.Builder uriBuilder =  Uri.parse(castUrl).buildUpon();
+            Uri.Builder uriBuilder = Uri.parse(castUrl).buildUpon();
             uriBuilder.query(uri.getQuery());
-            if(sbmId != null)
-            {
+            if (sbmId != null) {
                 uriBuilder.appendQueryParameter("sbmid", sbmId);
             }
             return uriBuilder.build().toString();
         }
 
-        return castUrl ;
+        return castUrl;
     }
 
 
@@ -162,7 +160,7 @@ public class StationPlayer extends MediaPlayer
 
         if (mMediaRoute != null) {
             // Use SHOUTCast for Google Cast
-            String transport = PlayerConsts.TRANSPORT_SC;
+            String transport = PlayerConstants.TRANSPORT_SC;
             connectionClientSettings.putString(StationConnectionClient.SETTINGS_TRANSPORT, transport);
         }
 
@@ -185,11 +183,10 @@ public class StationPlayer extends MediaPlayer
 
             //Google analytics  :track connection time
             AnalyticsTracker tracker = AnalyticsTracker.getTracker(getContext());
-            long connectionTime      = tracker.stopTimer();
+            long connectionTime = tracker.stopTimer();
             String mount = getSettings().getString(SETTINGS_STATION_MOUNT);
             String broadcaster = getSettings().getString(SETTINGS_STATION_BROADCASTER);
-            switch (errorCode)
-            {
+            switch (errorCode) {
                 case ERROR_CONNECTION_FAILED:
                     tracker.trackStreamingConnectionFailed(mount, broadcaster, connectionTime);
                     break;
@@ -219,13 +216,13 @@ public class StationPlayer extends MediaPlayer
                 // Add extra stream info
                 Bundle stationSettings = getSettings();
                 boolean locationTrackingEnabled = stationSettings.getBoolean(SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED);
-                Serializable targetingParams    = stationSettings.getSerializable(SETTINGS_TARGETING_PARAMS);
-                String authToken                = stationSettings.getString(SETTINGS_AUTH_TOKEN);
-                Bundle metaData                 = stationSettings.getBundle(SETTINGS_MEDIA_ITEM_METADATA);
-                String mount                    = stationSettings.getString(SETTINGS_STATION_MOUNT);
-                Integer lowDelay                = stationSettings.getInt(SETTINGS_LOW_DELAY, 0);
-                String[] tTags                  = stationSettings.getStringArray(SETTINGS_TTAGS);
-                boolean disableExoPlayer        = stationSettings.getBoolean(PlayerConsts.FORCE_DISABLE_EXOPLAYER, false);
+                Serializable targetingParams = stationSettings.getSerializable(SETTINGS_TARGETING_PARAMS);
+                String authToken = stationSettings.getString(SETTINGS_AUTH_TOKEN);
+                Bundle metaData = stationSettings.getBundle(SETTINGS_MEDIA_ITEM_METADATA);
+                String mount = stationSettings.getString(SETTINGS_STATION_MOUNT);
+                Integer lowDelay = stationSettings.getInt(SETTINGS_LOW_DELAY, 0);
+                String[] tTags = stationSettings.getStringArray(SETTINGS_TTAGS);
+                boolean disableExoPlayer = stationSettings.getBoolean(PlayerConstants.FORCE_DISABLE_EXOPLAYER, false);
 
                 streamSettings.putBoolean(StreamPlayer.SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED, locationTrackingEnabled);
                 streamSettings.putSerializable(StreamPlayer.SETTINGS_TARGETING_PARAMS, targetingParams);
@@ -234,16 +231,15 @@ public class StationPlayer extends MediaPlayer
                 streamSettings.putBundle(StreamPlayer.SETTINGS_MEDIA_ITEM_METADATA, metaData);
                 streamSettings.putString(StreamPlayer.SETTINGS_STATION_MOUNT, mount);
                 streamSettings.putInt(StreamPlayer.SETTINGS_LOW_DELAY, lowDelay);
-                streamSettings.putBoolean(PlayerConsts.FORCE_DISABLE_EXOPLAYER, disableExoPlayer);
+                streamSettings.putBoolean(PlayerConstants.FORCE_DISABLE_EXOPLAYER, disableExoPlayer);
 
                 //update transport on stationSettings
                 String transport = streamSettings.getString(SETTINGS_TRANSPORT);
-                if(transport != null)
-                {
+                if (transport != null) {
                     getSettings().putString(SETTINGS_TRANSPORT, transport);
                 }
 
-                if ( tTags != null )
+                if (tTags != null)
                     streamSettings.putStringArray(StreamPlayer.SETTINGS_TTAGS, tTags);
 
                 mStreamPlayer = new StreamPlayer(getContext(), streamSettings);
@@ -282,7 +278,8 @@ public class StationPlayer extends MediaPlayer
 
 
     @Override
-    protected void internalSeekTo(int position) {}
+    protected void internalSeekTo(int position) {
+    }
 
 
     @Override
@@ -344,16 +341,13 @@ public class StationPlayer extends MediaPlayer
             AnalyticsTracker tracker = AnalyticsTracker.getTracker(getContext());
             long connectionTime = tracker.stopTimer();
             String mount = getSettings().getString(SETTINGS_STATION_MOUNT);
-            String broadcaster =  getSettings().getString(SETTINGS_STATION_BROADCASTER);
-            if(state == STATE_CONNECTING)
-            {
+            String broadcaster = getSettings().getString(SETTINGS_STATION_BROADCASTER);
+            if (state == STATE_CONNECTING) {
                 //Google analytics  :track connection time
                 tracker.trackStreamingConnectionSuccess(mount, broadcaster, connectionTime);
-            }
-            else if(state == STATE_ERROR)
-            {
+            } else if (state == STATE_ERROR) {
                 //Google analytics  :track connection time
-                tracker.trackStreamingConnectionError(mount,broadcaster, connectionTime);
+                tracker.trackStreamingConnectionError(mount, broadcaster, connectionTime);
             }
         }
     };
@@ -385,7 +379,7 @@ public class StationPlayer extends MediaPlayer
             routeInfo = null;
         }
 
-        if ( !RemotePlayer.isSameRoute(mMediaRoute, routeInfo)) {
+        if (!RemotePlayer.isSameRoute(mMediaRoute, routeInfo)) {
             mMediaRoute = routeInfo;
             mResetConnectionClient = true;
 
@@ -407,15 +401,14 @@ public class StationPlayer extends MediaPlayer
      */
     private void initUserAgent() {
         final String broadcaster = getUserAgentMandatoryField(SETTINGS_STATION_BROADCASTER);
-        final String station     = getUserAgentMandatoryField(SETTINGS_STATION_NAME);
-        final String appVersion  = userAgentStrip(getAppVersion(getContext()));
-        final String osVersion   = userAgentStrip(android.os.Build.VERSION.RELEASE);
-        final String deviceName  = userAgentStrip(android.os.Build.MANUFACTURER + '-' + android.os.Build.MODEL);
+        final String station = getUserAgentMandatoryField(SETTINGS_STATION_NAME);
+        final String appVersion = userAgentStrip(getAppVersion(getContext()));
+        final String osVersion = userAgentStrip(android.os.Build.VERSION.RELEASE);
+        final String deviceName = userAgentStrip(android.os.Build.MANUFACTURER + '-' + android.os.Build.MODEL);
 
         mUserAgent = "CustomPlayer1/" + appVersion + " Android/" + osVersion + ' ' + deviceName + ' ' + broadcaster + '/' + station + " TdSdk/android-" + SdkUtil.VERSION;
         Log.i(TAG, "User agent: " + mUserAgent);
     }
-
 
     private String getUserAgentMandatoryField(String key) {
         String value = userAgentStrip(getSettings().getString(key));
@@ -425,7 +418,6 @@ public class StationPlayer extends MediaPlayer
             return userAgentStrip(value);
         }
     }
-
 
     private static String userAgentStrip(String token) {
         return (token == null) ? null : token.replaceAll("[^0-9a-zA-Z.,-]", "");

@@ -2,8 +2,8 @@ package com.tritondigital.util;
 
 import android.text.TextUtils;
 
-//import junit.framework.AssertionFailedError;
-//import junit.framework.ComparisonFailure;
+import junit.framework.AssertionFailedError;
+import junit.framework.ComparisonFailure;
 
 /**
  * Does assertions. Wraps Android class but replaces the assert by a

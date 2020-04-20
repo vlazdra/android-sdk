@@ -14,11 +14,11 @@ import java.util.Locale;
 
 /**
  * Helps create station stream URLs.
- *
+ * <p>
  * This class helps you create a stream URL with tracking parameters. The user
  * tracking ID and location is automatically added when calling build(). This
  * class can also be used to create the stream parameters for TritonPlayer.
- *
+ * <p>
  * A basic validation is done when adding a query parameter.
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -29,23 +29,23 @@ public final class StreamUrlBuilder {
 
     /**
      * _float_ - Latitude (-90.0f to 90.0f)
-     *
+     * <p>
      * Not required individually. If using, you must specify StreamUrlBuilder.LONGITUDE.
      */
     public static final String LATITUDE = "lat";
 
     /**
      * _float_ - Longitude (-180.0f to 180.0f)
-     *
+     * <p>
      * Not required individually. If using, you must specify StreamUrlBuilder.LATITUDE.
      */
     public static final String LONGITUDE = "long";
 
     /**
      * _String_ - Postal/ZIP code
-     *
+     * <p>
      * Valid postal or ZIP code, without spaces. E.g., 89040 or H3G1R8.
-     *
+     * <p>
      * Not required individually. If using, however, we recommend that you
      * specify StreamUrlBuilder.COUNTRY_CODE.
      */
@@ -55,7 +55,7 @@ public final class StreamUrlBuilder {
      * _String_ - Country code
      * (<a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">
      * ISO 3166-1 alpha-2</a>)
-     *
+     * <p>
      * Not required individually. If using, however, we recommend that you
      * specify StreamUrlBuilder.POSTAL_CODE.
      */
@@ -68,7 +68,7 @@ public final class StreamUrlBuilder {
 
     /**
      * _int_ - Age (1 to 125)
-     *
+     * <p>
      * Clients/players must specify only one of StreamUrlBuilder.AGE,
      * StreamUrlBuilder.DATE_OF_BIRTH or StreamUrlBuilder.YEAR_OF_BIRTH.
      */
@@ -76,23 +76,31 @@ public final class StreamUrlBuilder {
 
     /**
      * _String_ - Date of birth formatted as "YYYY-MM-DD"
+     *
      * @copydetails AGE
      */
     public static final String DATE_OF_BIRTH = "dob";
 
     /**
      * _int_ - Year of birth (1900 to 2005)
+     *
      * @copydetails AGE
      */
     public static final String YEAR_OF_BIRTH = "yob";
 
-    /** _char_ - Gender ('m' or 'f') */
+    /**
+     * _char_ - Gender ('m' or 'f')
+     */
     public static final String GENDER = "gender";
 
-    /** Possible StreamUrlBuilder.GENDER value */
+    /**
+     * Possible StreamUrlBuilder.GENDER value
+     */
     public static final char GENDER_VALUE_FEMALE = 'f';
 
-    /** @copybrief GENDER_VALUE_FEMALE */
+    /**
+     * @copybrief GENDER_VALUE_FEMALE
+     */
     public static final char GENDER_VALUE_MALE = 'm';
 
 
@@ -102,7 +110,7 @@ public final class StreamUrlBuilder {
 
     /**
      * _int_ - Custom segment ID (1 to 1000000)
-     *
+     * <p>
      * Broadcasters that want to differentiate their listeners into custom
      * broadcaster-specific segments may use the Custom Segment Targeting
      * capability of Tap.
@@ -120,17 +128,16 @@ public final class StreamUrlBuilder {
 
     /**
      * _String (comma-separated list)_ - Banner capabilities
-     *
+     * <p>
      * Players can provide details on their level of support for banners, such
      * as banner sizes and formats.
-     *
+     * <p>
      * The ordering of the capability formats is not important.
      *
      * @note Before attempting to use player capability targeting, please contact
      * the Triton Digital Support Team to enable Player Capability Targeting for
      * your broadcaster. Currently, Player Capability Targeting only works with
      * Tap advertising.
-     *
      * @par Supported Formats
      *
      * <table>
@@ -185,7 +192,7 @@ public final class StreamUrlBuilder {
 
     /**
      * Adds a key/value pair to the URL query parameters.
-     *
+     * <p>
      * The key and value will be encoded.
      */
     public StreamUrlBuilder addQueryParameter(String key, String value) {
@@ -344,16 +351,15 @@ public final class StreamUrlBuilder {
 
     /**
      * Enables the location tracking using the device's location manager.
-     *
+     * <p>
      * Enabling this feature will overwrite the StreamUrlBuilder.LATITUDE
      * and StreamUrlBuilder.LONGITUDE query parameters.
-     *
+     * <p>
      * See <a href="http://developer.android.com/reference/android/location/LocationManager.html">
      * Android location manager</a>.
      *
      * @par AndroidManifest.xml Permissions
-     * @code{.xml}
-     *      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+     * @code{.xml} <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
      * @endcode
      */
     @SuppressWarnings("JavaDoc")
@@ -372,7 +378,7 @@ public final class StreamUrlBuilder {
 
     /**
      * Returns an URL from the previously set data.
-     *
+     * <p>
      * This method also refreshes the user tracking id and the location.
      */
     public String build() {
@@ -396,8 +402,7 @@ public final class StreamUrlBuilder {
         }
 
 
-        if (mQueryParams.get(BANNERS) == null)
-        {
+        if (mQueryParams.get(BANNERS) == null) {
             uriBuilder.appendQueryParameter(BANNERS, "none");
         }
 
@@ -409,7 +414,7 @@ public final class StreamUrlBuilder {
 
 
         //Add pname
-        uriBuilder.appendQueryParameter(PlayerConsts.PNAME, PlayerConsts.PNAME_VAL);
+        uriBuilder.appendQueryParameter(PlayerConstants.PNAME, PlayerConstants.PNAME_VAL);
 
 
         String streamUrl = uriBuilder.build().toString();

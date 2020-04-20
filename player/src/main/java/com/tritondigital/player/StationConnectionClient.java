@@ -35,18 +35,18 @@ class StationConnectionClient {
     public static final int ERROR_SERVICE_UNAVAILABLE = MediaPlayer.ERROR_SERVICE_UNAVAILABLE;
 
     /** @copybrief PlayerConsts.STATION_MOUNT */
-    public static final String SETTINGS_STATION_MOUNT = PlayerConsts.STATION_MOUNT;
+    public static final String SETTINGS_STATION_MOUNT = PlayerConstants.STATION_MOUNT;
 
     /** @copybrief PlayerConsts::PLAYER_SERVICES_REGION */
-    public static final String SETTINGS_PLAYER_SERVICES_REGION = PlayerConsts.PLAYER_SERVICES_REGION;
+    public static final String SETTINGS_PLAYER_SERVICES_REGION = PlayerConstants.PLAYER_SERVICES_REGION;
 
     /**
      * @copybrief PlayerConsts.TRANSPORT
      * Default: flv
      */
-    public static final String SETTINGS_TRANSPORT = PlayerConsts.TRANSPORT;
+    public static final String SETTINGS_TRANSPORT = PlayerConstants.TRANSPORT;
 
-    public static final String SETTINGS_USER_AGENT = PlayerConsts.USER_AGENT;
+    public static final String SETTINGS_USER_AGENT = PlayerConstants.USER_AGENT;
 
     private static final int MIN_RETRY_DELAY = 1000;
     private static final int MAX_RETRY_DELAY = 5000;
@@ -262,7 +262,7 @@ class StationConnectionClient {
             //Normalize transport and sbm; if streamSuffix is null, we will stream FLV
             if(streamSuffix == null)
             {
-                transport = PlayerConsts.TRANSPORT_FLV;
+                transport = PlayerConstants.TRANSPORT_FLV;
                 sbmUrl    = null;
             }
 

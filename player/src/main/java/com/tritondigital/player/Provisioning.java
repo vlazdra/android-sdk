@@ -50,11 +50,11 @@ class Provisioning
     {
         public static final String SERVERS      = "servers";
         public static final String STATUS       = "status";
-        public static final String MIME_TYPE    = PlayerConsts.MIME_TYPE;
-        public static final String MOUNT        = PlayerConsts.STATION_MOUNT;
+        public static final String MIME_TYPE = PlayerConstants.MIME_TYPE;
+        public static final String MOUNT = PlayerConstants.STATION_MOUNT;
         public static final String MOUNT_SUFFIX = "mount_suffix";
         public static final String SBM_SUFFIX   = "sbm_suffix";
-        public static final String TRANSPORT    = PlayerConsts.TRANSPORT;
+        public static final String TRANSPORT = PlayerConstants.TRANSPORT;
 
         abstract class Server
         {
@@ -76,7 +76,7 @@ class Provisioning
     public static final int ERROR_UNKNOWN_HOST        = 9001;
 
     private Listener   mListener;
-    private String     mTransport = PlayerConsts.TRANSPORT_FLV;
+    private String mTransport = PlayerConstants.TRANSPORT_FLV;
     private String     mMount;
     private String     mUserAgent;
     private String     mPlayerServicesPrefix;
@@ -154,9 +154,9 @@ class Provisioning
 
     private void setPreferedTransport(String transport) {
         if (transport == null) {
-            mTransport = PlayerConsts.TRANSPORT_FLV;
-        } else if (PlayerConsts.TRANSPORT_HLS.equals(transport) && !isHlsSupported()) {
-            mTransport = PlayerConsts.TRANSPORT_FLV;
+            mTransport = PlayerConstants.TRANSPORT_FLV;
+        } else if (PlayerConstants.TRANSPORT_HLS.equals(transport) && !isHlsSupported()) {
+            mTransport = PlayerConstants.TRANSPORT_FLV;
         } else {
             mTransport = transport;
         }
@@ -447,9 +447,9 @@ class Provisioning
         private String codecToMimeType(String codec) {
             if (codec != null) {
                 if (codec.equals("mp3")) {
-                    return PlayerConsts.MIME_TYPE_MPEG;
+                    return PlayerConstants.MIME_TYPE_MPEG;
                 } else if (codec.contains("aac")) {
-                    return PlayerConsts.MIME_TYPE_AAC;
+                    return PlayerConstants.MIME_TYPE_AAC;
                 }
             }
 
@@ -501,7 +501,7 @@ class Provisioning
             // Default value
             outProvisioningBundle.putString(Result.TRANSPORT, mTransport);
 
-            if (PlayerConsts.TRANSPORT_HLS.equals(mTransport)) {
+            if (PlayerConstants.TRANSPORT_HLS.equals(mTransport)) {
                 while (parser.next() != XmlPullParser.END_TAG) {
                     if (parser.getEventType() == XmlPullParser.START_TAG) {
                         String elementName = parser.getName();
@@ -541,7 +541,7 @@ class Provisioning
                         }
                     }
 
-                    if (PlayerConsts.TRANSPORT_SC.equals(mTransport)) {
+                    if (PlayerConstants.TRANSPORT_SC.equals(mTransport)) {
                         if ("shoutcast-v1".equals(elementName) || "shoutcast-v2".equals(elementName)) {
                             String enabled = parser.getAttributeValue(null, "enabled");
                             if ("true".equals(enabled)) {

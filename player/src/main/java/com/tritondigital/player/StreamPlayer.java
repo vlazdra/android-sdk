@@ -3,11 +3,15 @@ package com.tritondigital.player;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
 
-import com.tritondigital.util.*;
+import androidx.annotation.NonNull;
+import androidx.mediarouter.media.MediaRouter;
+
+import com.tritondigital.util.AnalyticsTracker;
+import com.tritondigital.util.Assert;
+import com.tritondigital.util.Log;
+import com.tritondigital.util.NetworkUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,23 +29,23 @@ import java.util.Map;
 // TODO: keep the volume when changing the station
 public class StreamPlayer extends MediaPlayer {
 
-    public static final String SETTINGS_AUTH_TOKEN                          = PlayerConsts.AUTH_TOKEN;
-    public static final String SETTINGS_MEDIA_ITEM_METADATA                 = PlayerConsts.MEDIA_ITEM_METADATA;
-    public static final String SETTINGS_STATION_MOUNT                       = PlayerConsts.STATION_MOUNT;
-    public static final String SETTINGS_SBM_URL                             = PlayerConsts.SBM_URL;
-    public static final String SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED = PlayerConsts.TARGETING_LOCATION_TRACKING_ENABLED;
-    public static final String SETTINGS_TARGETING_PARAMS                    = PlayerConsts.TARGETING_PARAMS;
-    public static final String SETTINGS_STREAM_MIME_TYPE                    = PlayerConsts.MIME_TYPE;
-    public static final String SETTINGS_STREAM_POSITION                     = PlayerConsts.POSITION;
-    public static final String SETTINGS_STREAM_URL                          = PlayerConsts.STREAM_URL;
-    public static final String SETTINGS_TRANSPORT                           = PlayerConsts.TRANSPORT;
-    public static final String SETTINGS_LOW_DELAY                           = PlayerConsts.LOW_DELAY; //-1 (AUTO), 0 (DISABLED), 1 - 60 for seconds
-    public static final String SETTINGS_TTAGS                               = PlayerConsts.TTAGS;
+    public static final String SETTINGS_AUTH_TOKEN = PlayerConstants.AUTH_TOKEN;
+    public static final String SETTINGS_MEDIA_ITEM_METADATA = PlayerConstants.MEDIA_ITEM_METADATA;
+    public static final String SETTINGS_STATION_MOUNT = PlayerConstants.STATION_MOUNT;
+    public static final String SETTINGS_SBM_URL = PlayerConstants.SBM_URL;
+    public static final String SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED = PlayerConstants.TARGETING_LOCATION_TRACKING_ENABLED;
+    public static final String SETTINGS_TARGETING_PARAMS = PlayerConstants.TARGETING_PARAMS;
+    public static final String SETTINGS_STREAM_MIME_TYPE = PlayerConstants.MIME_TYPE;
+    public static final String SETTINGS_STREAM_POSITION = PlayerConstants.POSITION;
+    public static final String SETTINGS_STREAM_URL = PlayerConstants.STREAM_URL;
+    public static final String SETTINGS_TRANSPORT = PlayerConstants.TRANSPORT;
+    public static final String SETTINGS_LOW_DELAY = PlayerConstants.LOW_DELAY; //-1 (AUTO), 0 (DISABLED), 1 - 60 for seconds
+    public static final String SETTINGS_TTAGS = PlayerConstants.TTAGS;
 
     private static  final String USE_EXOPLAYER                              ="UseExoPlayer";
 
     // Other Settings
-    public static final String SETTINGS_USER_AGENT = PlayerConsts.USER_AGENT;
+    public static final String SETTINGS_USER_AGENT = PlayerConstants.USER_AGENT;
 
     private StreamUrlBuilder      mUrlBuilder;
     private Bundle                mLowLevelPlayerSettings;
@@ -91,7 +95,7 @@ public class StreamPlayer extends MediaPlayer {
             settings.putString(SETTINGS_TRANSPORT, transport);
         }
 
-        boolean forceDisableExoPlayer = settings.getBoolean(PlayerConsts.FORCE_DISABLE_EXOPLAYER, false);
+        boolean forceDisableExoPlayer = settings.getBoolean(PlayerConstants.FORCE_DISABLE_EXOPLAYER, false);
 
         boolean useExoPlayer = forceDisableExoPlayer? false: isExoPlayerPackageInClassPath();
 

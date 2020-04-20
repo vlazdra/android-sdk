@@ -41,8 +41,6 @@ if (System.properties['os.name'].toLowerCase().contains('windows')) {
     cmd = "gradlew.bat"
     println "it's Windows ${cmd}"
     isWindows = true
-} else {
-    println "it's NOT Windows"
 }
 
 allprojects {
@@ -52,6 +50,7 @@ allprojects {
         flatDir {
             dirs 'libs'
         }
+        google()
     }
 }
 

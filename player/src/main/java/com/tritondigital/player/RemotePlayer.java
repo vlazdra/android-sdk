@@ -5,14 +5,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.v7.media.MediaControlIntent;
-import android.support.v7.media.MediaItemStatus;
-import android.support.v7.media.MediaRouter;
-import android.support.v7.media.MediaSessionStatus;
-import android.support.v7.media.RemotePlaybackClient;
-import android.support.v7.media.RemotePlaybackClient.ItemActionCallback;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.mediarouter.media.MediaControlIntent;
+import androidx.mediarouter.media.MediaItemStatus;
+import androidx.mediarouter.media.MediaRouter;
+import androidx.mediarouter.media.MediaSessionStatus;
+import androidx.mediarouter.media.RemotePlaybackClient;
+import androidx.mediarouter.media.RemotePlaybackClient.ItemActionCallback;
 
 import com.tritondigital.util.Assert;
 import com.tritondigital.util.Log;
@@ -27,16 +28,16 @@ import com.tritondigital.util.Log;
  */
 class RemotePlayer extends MediaPlayer {
     /** @copybrief PlayerConsts.STREAM_URL */
-    public static final String SETTINGS_STREAM_URL = PlayerConsts.STREAM_URL;
+    public static final String SETTINGS_STREAM_URL = PlayerConstants.STREAM_URL;
 
     /** @copybrief PlayerConsts.MIME_TYPE */
-    public static final String SETTINGS_STREAM_MIME_TYPE = PlayerConsts.MIME_TYPE;
+    public static final String SETTINGS_STREAM_MIME_TYPE = PlayerConstants.MIME_TYPE;
 
     /** @copybrief PlayerConsts.MEDIA_ITEM_METADATA */
-    public static final String SETTINGS_MEDIA_ITEM_METADATA = PlayerConsts.MEDIA_ITEM_METADATA;
+    public static final String SETTINGS_MEDIA_ITEM_METADATA = PlayerConstants.MEDIA_ITEM_METADATA;
 
     /** @copybrief PlayerConsts.POSITION */
-    public static final String SETTINGS_POSITION = PlayerConsts.POSITION;
+    public static final String SETTINGS_POSITION = PlayerConstants.POSITION;
 
     private static final String TAG = Log.makeTag("RemotePlayer");
 

@@ -1,11 +1,12 @@
 package com.tritondigital.sdksample.player;
 
 import android.os.Bundle;
-import android.support.v7.media.MediaItemMetadata;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import androidx.mediarouter.media.MediaItemMetadata;
 
 import com.tritondigital.player.TritonPlayer;
 import com.tritondigital.sdksample.R;
