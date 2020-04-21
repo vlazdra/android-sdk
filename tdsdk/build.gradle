@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 
-
-
 android {
     compileSdkVersion COMPILE_SDK_VERSION.toInteger()
     buildToolsVersion BUILD_TOOLS_VERSION
@@ -13,22 +11,18 @@ android {
     }
 
     libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-                def fileName = "${archivesBaseName}-${tritonSDKVersion}.aar"
-                output.outputFileName = new File(".", fileName)
-            }
+        variant.outputs.all { output ->
+            outputFileName = "${archivesBaseName}-${tritonSDKVersion}.aar"
         }
     }
 }
 
 dependencies {
-  compile fileTree(include: ['*.jar'], dir: 'libs')
+    api fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 clean {
-  delete fileTree('libs') {
-    include '*.aar', '*.jar'
-  }
+    delete fileTree('libs') {
+        include '*.aar', '*.jar'
+    }
 }
