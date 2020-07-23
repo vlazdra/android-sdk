@@ -1,9 +1,10 @@
 package com.tritondigital.player;
 
 
-import android.support.v7.media.MediaControlIntent;
-import android.support.v7.media.MediaRouteSelector;
 import android.text.TextUtils;
+
+import androidx.mediarouter.media.MediaControlIntent;
+import androidx.mediarouter.media.MediaRouteSelector;
 
 import java.util.Locale;
 
@@ -49,11 +50,11 @@ public final class PlayerUtil {
                     fileName.contains("aac/") ||
                     fileName.contains("aac:") ||
                     fileName.endsWith("aac")) {
-                return PlayerConsts.MIME_TYPE_AAC;
+                return PlayerConstants.MIME_TYPE_AAC;
             }
         }
 
-        return PlayerConsts.MIME_TYPE_MPEG;
+        return PlayerConstants.MIME_TYPE_MPEG;
     }
 
 
@@ -65,9 +66,9 @@ public final class PlayerUtil {
             mimeType = mimeType.toLowerCase(Locale.ENGLISH);
 
             if (mimeType.contains("mp3") || mimeType.contains("mpeg") || mimeType.contains("mpg")) {
-                return PlayerConsts.MIME_TYPE_MPEG;
+                return PlayerConstants.MIME_TYPE_MPEG;
             } else if (mimeType.contains("aac")) {
-                return PlayerConsts.MIME_TYPE_AAC;
+                return PlayerConstants.MIME_TYPE_AAC;
             }
         }
 
@@ -85,18 +86,18 @@ public final class PlayerUtil {
             if (fileName.contains(".flv")
                     || fileName.contains("_flv")
                     || fileName.endsWith("flv")) {
-                return PlayerConsts.TRANSPORT_FLV;
+                return PlayerConstants.TRANSPORT_FLV;
 
             } else if (fileName.contains(".hls")
                     || fileName.contains("_hls")
                     || fileName.contains(".m3u8")
                     || fileName.contains("hls:")
                     || fileName.endsWith("hls")) {
-                return PlayerConsts.TRANSPORT_HLS;
+                return PlayerConstants.TRANSPORT_HLS;
             }
         }
 
-        return PlayerConsts.TRANSPORT_SC;
+        return PlayerConstants.TRANSPORT_SC;
     }
 
 
@@ -107,9 +108,13 @@ public final class PlayerUtil {
         if (!TextUtils.isEmpty(transport)) {
             transport = transport.toLowerCase(Locale.ENGLISH);
 
-            if      (transport.contains("flv")) { return PlayerConsts.TRANSPORT_FLV; }
-            else if (transport.contains("hls")) { return PlayerConsts.TRANSPORT_HLS; }
-            else if (transport.contains("sc"))  { return PlayerConsts.TRANSPORT_SC; }
+            if (transport.contains("flv")) {
+                return PlayerConstants.TRANSPORT_FLV;
+            } else if (transport.contains("hls")) {
+                return PlayerConstants.TRANSPORT_HLS;
+            } else if (transport.contains("sc")) {
+                return PlayerConstants.TRANSPORT_SC;
+            }
         }
 
         return transport;

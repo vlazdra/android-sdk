@@ -10,7 +10,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.tritondigital.net.streaming.proxy.Proxy;
 import com.tritondigital.net.streaming.proxy.ProxyFactory;
@@ -34,21 +35,21 @@ import java.util.Map;
 public class AndroidPlayer extends MediaPlayer
 {
     /** @copybrief Const.STREAM_URL */
-    public static final String SETTINGS_STREAM_URL = PlayerConsts.STREAM_URL;
+    public static final String SETTINGS_STREAM_URL = PlayerConstants.STREAM_URL;
 
     /** @copybrief Const.MIME_TYPE
      * Used only for FLV streams */
-    public static final String SETTINGS_MIME_TYPE = PlayerConsts.MIME_TYPE;
+    public static final String SETTINGS_MIME_TYPE = PlayerConstants.MIME_TYPE;
 
     /** @copybrief Const.TRANSPORT
      * Use only for FLV streams */
-    public static final String SETTINGS_TRANSPORT = PlayerConsts.TRANSPORT;
+    public static final String SETTINGS_TRANSPORT = PlayerConstants.TRANSPORT;
 
     /** @copybrief Const.USER_AGENT */
-    public static final String SETTINGS_USER_AGENT = PlayerConsts.USER_AGENT;
+    public static final String SETTINGS_USER_AGENT = PlayerConstants.USER_AGENT;
 
     /** @copybrief PlayerConsts.POSITION */
-    public static final String SETTINGS_POSITION = PlayerConsts.POSITION;
+    public static final String SETTINGS_POSITION = PlayerConstants.POSITION;
 
 
     private static final int CALLBACK_CUE_POINT_RECEIVED = 60;
@@ -363,7 +364,7 @@ public class AndroidPlayer extends MediaPlayer
 
                     // Create the RTSP proxy
                     String transport = mSettings.getString(SETTINGS_TRANSPORT);
-                    if (PlayerConsts.TRANSPORT_FLV.equals(transport)) {
+                    if (PlayerConstants.TRANSPORT_FLV.equals(transport)) {
                         mStreamingProxy = createStreamingProxy();
                         String proxyUrl = mStreamingProxy.startAsync(streamUrl);
 
@@ -395,7 +396,7 @@ public class AndroidPlayer extends MediaPlayer
                     mNativePlayer.start();
                     debugEnableExtraLogs();
 
-                    if (PlayerConsts.MIME_TYPE_AAC.equals(mSettings.getString(SETTINGS_MIME_TYPE))) {
+                    if (PlayerConstants.MIME_TYPE_AAC.equals(mSettings.getString(SETTINGS_MIME_TYPE))) {
                         mPlayPollingEnabled = true;
                         pollIsPlaying();
                     } else {
@@ -674,7 +675,7 @@ public class AndroidPlayer extends MediaPlayer
 
             // The streaming proxy is required for an FLV stream.
             String mimeType = mSettings.getString(SETTINGS_MIME_TYPE);
-            if (PlayerConsts.MIME_TYPE_MPEG.equals(mimeType)) {
+            if (PlayerConstants.MIME_TYPE_MPEG.equals(mimeType)) {
                 streamingProxy = ProxyFactory.createHttpProxy(metaDataListener);
             } else {
                 streamingProxy = ProxyFactory.createRtspProxy(metaDataListener);

@@ -3,8 +3,9 @@ package com.tritondigital.sdksample.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.media.MediaRouter;
 import android.util.Log;
+
+import androidx.mediarouter.media.MediaRouter;
 
 import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.Cast;
@@ -17,7 +18,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-
+import com.tritondigital.player.PlayerConstants;
 
 import org.json.JSONObject;
 
@@ -275,7 +276,7 @@ public final class CastReceiverSender
         JSONObject customData = new JSONObject();
         try
         {
-            customData.put(com.tritondigital.player.PlayerConsts.SBM_URL, mSbmUrl) ;
+            customData.put(PlayerConstants.SBM_URL, mSbmUrl);
         }
         catch (Exception e){}
 

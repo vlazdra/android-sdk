@@ -28,12 +28,13 @@ repositories {
     }
 }
 dependencies {
-    compile(name: "$TRITON_SDK", ext:'aar')
-    compile 'com.google.android.gms:play-services-base:11.6.0'
-    compile 'com.google.android.gms:play-services-ads:11.6.0'
-    compile 'com.google.android.gms:play-services-cast:11.6.0'
-    compile 'com.android.support:mediarouter-v7:27.0.2'
+    fileTree(name: "$TRITON_SDK", ext:'aar')
+
+    implementation 'com.google.android.gms:play-services-base:17.2.1'
+    // compile 'com.google.android.gms:play-services-ads:19.0.1'
+    implementation 'com.google.android.gms:play-services-cast:18.1.0'
+    implementation 'androidx.mediarouter:mediarouter:1.1.0'
     //compile 'com.android.support:appcompat-v7:27.0.2'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.9.4'
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.3'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.11.3'
 }

@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
 
+import androidx.mediarouter.media.MediaRouter;
+
 import com.tritondigital.util.Log;
 import com.tritondigital.util.TrackingUtil;
 
@@ -166,65 +168,65 @@ public final class TritonPlayer extends MediaPlayer {
     ////////////////////////////////////////////////////////////////////////
 
     /** @copybrief PlayerConsts::STATION_BROADCASTER */
-    public static final String SETTINGS_STATION_BROADCASTER = PlayerConsts.STATION_BROADCASTER;
+    public static final String SETTINGS_STATION_BROADCASTER = PlayerConstants.STATION_BROADCASTER;
 
     /** @copybrief PlayerConsts::STATION_NAME */
-    public static final String SETTINGS_STATION_NAME = PlayerConsts.STATION_NAME;
+    public static final String SETTINGS_STATION_NAME = PlayerConstants.STATION_NAME;
 
     /** @copybrief PlayerConsts::STATION_MOUNT */
-    public static final String SETTINGS_STATION_MOUNT = PlayerConsts.STATION_MOUNT;
+    public static final String SETTINGS_STATION_MOUNT = PlayerConstants.STATION_MOUNT;
 
     /** @copybrief PlayerConsts::STREAM_URL */
-    public static final String SETTINGS_STREAM_URL = PlayerConsts.STREAM_URL;
+    public static final String SETTINGS_STREAM_URL = PlayerConstants.STREAM_URL;
 
     /** @copybrief PlayerConsts::MIME_TYPE
      *
      * Needed by Google Cast. The default is MP3.
      */
-    public static final String SETTINGS_STREAM_MIME_TYPE = PlayerConsts.MIME_TYPE;
+    public static final String SETTINGS_STREAM_MIME_TYPE = PlayerConstants.MIME_TYPE;
 
     /* @copydoc PlayerConsts::AUTH_TOKEN
     */
-    public static final String SETTINGS_AUTH_TOKEN = PlayerConsts.AUTH_TOKEN;
+    public static final String SETTINGS_AUTH_TOKEN = PlayerConstants.AUTH_TOKEN;
 
     /** @copydoc PlayerConsts::TARGETING_PARAMS */
-    public static final String SETTINGS_TARGETING_PARAMS = PlayerConsts.TARGETING_PARAMS;
+    public static final String SETTINGS_TARGETING_PARAMS = PlayerConstants.TARGETING_PARAMS;
 
     /** @copybrief PlayerConsts::TARGETING_LOCATION_TRACKING_ENABLED */
-    public static final String SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED = PlayerConsts.TARGETING_LOCATION_TRACKING_ENABLED;
+    public static final String SETTINGS_TARGETING_LOCATION_TRACKING_ENABLED = PlayerConstants.TARGETING_LOCATION_TRACKING_ENABLED;
 
     /** @copybrief PlayerConsts::MEDIA_ITEM_METADATA */
-    public static final String SETTINGS_MEDIA_ITEM_METADATA = PlayerConsts.MEDIA_ITEM_METADATA;
+    public static final String SETTINGS_MEDIA_ITEM_METADATA = PlayerConstants.MEDIA_ITEM_METADATA;
 
     /** @copybrief PlayerConsts::TRANSPORT */
-    public static final String SETTINGS_TRANSPORT = PlayerConsts.TRANSPORT;
+    public static final String SETTINGS_TRANSPORT = PlayerConstants.TRANSPORT;
 
     /** @copybrief PlayerConsts::MIME_TYPE_AAC */
-    public static final String MIME_TYPE_AAC  = PlayerConsts.MIME_TYPE_AAC;
+    public static final String MIME_TYPE_AAC = PlayerConstants.MIME_TYPE_AAC;
 
     /** @copybrief PlayerConsts::MIME_TYPE_MPEG */
-    public static final String MIME_TYPE_MPEG = PlayerConsts.MIME_TYPE_MPEG;
+    public static final String MIME_TYPE_MPEG = PlayerConstants.MIME_TYPE_MPEG;
 
     /** @copybrief PlayerConsts::TRANSPORT_FLV */
-    public static final String TRANSPORT_FLV = PlayerConsts.TRANSPORT_FLV;
+    public static final String TRANSPORT_FLV = PlayerConstants.TRANSPORT_FLV;
 
     /** @copybrief PlayerConsts::TRANSPORT_HLS */
-    public static final String TRANSPORT_HLS = PlayerConsts.TRANSPORT_HLS;
+    public static final String TRANSPORT_HLS = PlayerConstants.TRANSPORT_HLS;
 
     /** @copybrief PlayerConsts::TRANSPORT_SC */
-    public static final String TRANSPORT_SC  = PlayerConsts.TRANSPORT_SC;
+    public static final String TRANSPORT_SC = PlayerConstants.TRANSPORT_SC;
 
     /** @copybrief PlayerConsts::LOW_DELAY */
-    public static final String SETTINGS_LOW_DELAY  = PlayerConsts.LOW_DELAY; //-1 (AUTO), 0 (DISABLED), 1 - 60 for seconds
+    public static final String SETTINGS_LOW_DELAY = PlayerConstants.LOW_DELAY; //-1 (AUTO), 0 (DISABLED), 1 - 60 for seconds
 
     /** @copybrief PlayerConsts::TTAGS */
-    public static final String SETTINGS_TTAGS  = PlayerConsts.TTAGS;
+    public static final String SETTINGS_TTAGS = PlayerConstants.TTAGS;
 
     /** @copybrief PlayerConsts::FORCE_DISABLE_EXOPLAYER */
-    public static final String SETTINGS_FORCE_DISABLE_EXOPLAYER = PlayerConsts.FORCE_DISABLE_EXOPLAYER;
+    public static final String SETTINGS_FORCE_DISABLE_EXOPLAYER = PlayerConstants.FORCE_DISABLE_EXOPLAYER;
 
     /** @copybrief PlayerConsts::PLAYER_SERVICES_REGION */
-    public static final String SETTINGS_PLAYER_SERVICES_REGION = PlayerConsts.PLAYER_SERVICES_REGION;
+    public static final String SETTINGS_PLAYER_SERVICES_REGION = PlayerConstants.PLAYER_SERVICES_REGION;
 
     private final MediaPlayer mPlayer;
 

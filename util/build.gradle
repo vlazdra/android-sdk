@@ -8,17 +8,20 @@ android {
     defaultConfig {
         minSdkVersion TRITONSDK_MIN_SDK_VERSION.toInteger()
         targetSdkVersion TARGET_SDK_VERSION.toInteger()
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
-          minifyEnabled false
-          proguardFiles rootProject.file('proguard.txt')
+            minifyEnabled false
+            proguardFiles rootProject.file('proguard.txt')
         }
     }
+
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+
     lintOptions {
         abortOnError false
     }
@@ -26,16 +29,16 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
-    api 'com.google.android.gms:play-services-ads:11.6.0'
-    api 'com.google.android.gms:play-services-base:11.6.0'
-    api 'com.google.android.gms:play-services-analytics:11.6.0'
+    // api 'com.google.android.gms:play-services-ads:19.0.1'
+    api 'com.google.android.gms:play-services-base:17.2.1'
+    api 'com.google.android.gms:play-services-analytics:17.0.0'
 
-    androidTestImplementation 'com.android.support.test:runner:0.3'
-    androidTestImplementation 'com.android.support.test:rules:0.3'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2'
-    androidTestImplementation 'org.hamcrest:hamcrest-library:1.1'
+    implementation 'junit:junit:4.13'        // Required -- JUnit 4 framework
 
-
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    // androidTestImplementation 'org.hamcrest:hamcrest-library:2.2'
 }
 
 task SdkUtilVersion {

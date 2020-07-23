@@ -9,10 +9,11 @@ android {
         minSdkVersion TRITONSDK_MIN_SDK_VERSION.toInteger()
         targetSdkVersion TARGET_SDK_VERSION.toInteger()
     }
+
     buildTypes {
         release {
-          minifyEnabled true
-          proguardFiles rootProject.file('proguard.txt')
+            minifyEnabled true
+            proguardFiles rootProject.file('proguard.txt')
         }
     }
 }

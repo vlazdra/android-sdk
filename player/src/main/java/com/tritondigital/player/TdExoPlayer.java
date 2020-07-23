@@ -3,20 +3,40 @@ package com.tritondigital.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.android.exoplayer2.*;
-import com.google.android.exoplayer2.source.*;
-import com.google.android.exoplayer2.source.hls.*;
-import com.google.android.exoplayer2.trackselection.*;
-import com.google.android.exoplayer2.upstream.*;
-import com.tritondigital.player.exoplayer.extractor.flv.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultAllocator;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.tritondigital.player.exoplayer.extractor.flv.TdDefaultExtractorsFactory;
+import com.tritondigital.player.exoplayer.extractor.flv.TdMetaDataListener;
 import com.tritondigital.util.Assert;
 import com.tritondigital.util.Log;
 import com.tritondigital.util.NetworkUtil;
@@ -27,46 +47,55 @@ import java.util.Map;
 
 /**
  * Wraps Android's native player
- *
  */
-public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
-{
-    /** @copybrief Const.STREAM_URL */
-    public static final String SETTINGS_STREAM_URL = PlayerConsts.STREAM_URL;
+public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener {
+    /**
+     * @copybrief Const.STREAM_URL
+     */
+    public static final String SETTINGS_STREAM_URL = PlayerConstants.STREAM_URL;
 
-    /** @copybrief Const.MIME_TYPE
-     * Used only for FLV streams */
-    public static final String SETTINGS_MIME_TYPE = PlayerConsts.MIME_TYPE;
+    /**
+     * @copybrief Const.MIME_TYPE
+     * Used only for FLV streams
+     */
+    public static final String SETTINGS_MIME_TYPE = PlayerConstants.MIME_TYPE;
 
-    /** @copybrief Const.TRANSPORT
-     * Use only for FLV streams */
-    public static final String SETTINGS_TRANSPORT = PlayerConsts.TRANSPORT;
+    /**
+     * @copybrief Const.TRANSPORT
+     * Use only for FLV streams
+     */
+    public static final String SETTINGS_TRANSPORT = PlayerConstants.TRANSPORT;
 
-    /** @copybrief Const.USER_AGENT */
-    public static final String SETTINGS_USER_AGENT = PlayerConsts.USER_AGENT;
+    /**
+     * @copybrief Const.USER_AGENT
+     */
+    public static final String SETTINGS_USER_AGENT = PlayerConstants.USER_AGENT;
 
-    /** @copybrief PlayerConsts.POSITION */
-    public static final String SETTINGS_POSITION = PlayerConsts.POSITION;
+    /**
+     * @copybrief PlayerConstants.POSITION
+     */
+    public static final String SETTINGS_POSITION = PlayerConstants.POSITION;
 
-    public static final String SETTINGS_STATION_MOUNT = PlayerConsts.STATION_MOUNT;
+    public static final String SETTINGS_STATION_MOUNT = PlayerConstants.STATION_MOUNT;
 
-    public static final String SETTINGS_LOW_DELAY = PlayerConsts.LOW_DELAY;
+    public static final String SETTINGS_LOW_DELAY = PlayerConstants.LOW_DELAY;
 
     private static final int CALLBACK_CUE_POINT_RECEIVED = 60;
-    private static final int CALLBACK_ON_INFO            = 61;
-    private static final int CALLBACK_HANDLER_READY      = 62;
-    private static final int CALLBACK_STATE_CHANGED      = 63;
-    private static final int CALLBACK_METADATA_RECEIVED  = 64;
+    private static final int CALLBACK_ON_INFO = 61;
+    private static final int CALLBACK_HANDLER_READY = 62;
+    private static final int CALLBACK_STATE_CHANGED = 63;
+    private static final int CALLBACK_METADATA_RECEIVED = 64;
 
     private static final String TAG = Log.makeTag("TdExoPlayer:Thread");
 
-    /**ExoPlayer: Whether cross-protocol redirects (i.e. redirects from HTTP to HTTPS and vice versa) are enabled*/
-    private static final boolean SETTINGS_ALLOW_CROSS_PROTOCOL_REDIRECT =  true ;
+    /**
+     * ExoPlayer: Whether cross-protocol redirects (i.e. redirects from HTTP to HTTPS and vice versa) are enabled
+     */
+    private static final boolean SETTINGS_ALLOW_CROSS_PROTOCOL_REDIRECT = true;
 
     private final ArrayList<Message> mMessageQueue = new ArrayList<>();
-    private final MainHandler        mMainHandler;
-    private volatile PlayerHandler   mPlayerHandler;
-
+    private final MainHandler mMainHandler;
+    private volatile PlayerHandler mPlayerHandler;
 
 
     /**
@@ -194,7 +223,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         notifyCuePoint(cuePoint);
     }
 
-    private void onMetaDataReceived(Bundle msg) {        
+    private void onMetaDataReceived(Bundle msg) {
         notifyMetadata(msg);
     }
 
@@ -225,7 +254,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
             msg.what = action;
             msg.arg1 = arg1;
             msg.arg2 = 0;
-            msg.obj  = obj;
+            msg.obj = obj;
 
             mMessageQueue.add(msg);
         }
@@ -256,7 +285,6 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         sendPlayerMsg(PlayerHandler.ACTION_META, 0, metadata);
     }
 
-
     private static class MainHandler extends Handler {
         final TdExoPlayer mTdExoPlayer;
 
@@ -265,7 +293,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             if ((mTdExoPlayer != null) && (mTdExoPlayer.getState() != STATE_RELEASED)) {
                 switch (msg.what) {
                     case CALLBACK_CUE_POINT_RECEIVED:
@@ -294,19 +322,18 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         }
     }
 
-
     protected static class PlayerHandler extends Handler implements Player.EventListener {
 
-        static final int ACTION_PAUSE           = 350;
-        static final int ACTION_PLAY            = 351;
-        static final int ACTION_RELEASE         = 352;
-        static final int ACTION_SEEK_TO         = 353;
-        static final int ACTION_SET_VOLUME      = 354;
+        static final int ACTION_PAUSE = 350;
+        static final int ACTION_PLAY = 351;
+        static final int ACTION_RELEASE = 352;
+        static final int ACTION_SEEK_TO = 353;
+        static final int ACTION_SET_VOLUME = 354;
         static final int ACTION_POLL_IS_PLAYING = 355;
         static final int ACTION_META = 356;
 
 
-        private static final int BUFFER_SEGMENT_SIZE = 64*1024;
+        private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
         private static final int BUFFER_SEGMENTS = 256;
 
         private static final int TRITON_BUFFER_SCALE_UP_FACTOR = 4;
@@ -315,51 +342,68 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         private int dRebuffer = 4000;
         private int dBufferGaurd = 4000;
         private int dPrebufferMultiplier = 1;
-        private int lowDelay = 0;
+        private int lowDelay;
 
         private final Context mContext;
         private final MainHandler mMainHandler;
-        private final Bundle  mSettings;
+        private final Bundle mSettings;
 
         private static final String TAG = Log.makeTag("ExoPlayerBkg");
 
         private SimpleExoPlayer mExoPlayerLib;
 
-
-        private int   mDuration = DURATION_UNKNOWN;
-        private float mVolume   = VOLUME_NORMAL;
+        private int mDuration = DURATION_UNKNOWN;
+        private float mVolume = VOLUME_NORMAL;
         private boolean mFinishing;
 
-
-
         PlayerHandler(Context context, MainHandler mainHandler, Bundle settings) {
-            mContext     = context;
+            mContext = context;
             mMainHandler = mainHandler;
-            mSettings    = settings;
-            lowDelay    = mSettings.getInt(SETTINGS_LOW_DELAY,0); //-1 (AUTO), 0 (DISABLED), 1 - 60 for seconds (0/Disabled is default)
-            if ( lowDelay > 60 ) {
+            mSettings = settings;
+
+            // -1 (AUTO)
+            // 0 (DISABLED) - DEFAULT
+            // 1 - 60 for seconds
+            lowDelay = mSettings.getInt(SETTINGS_LOW_DELAY, 0);
+
+            if (lowDelay > 60) {
                 lowDelay = 60;
             }
-            if ( lowDelay < 0 ) {
+
+            if (lowDelay < 0) {
                 lowDelay = -1;
             }
+
             // Notify the background thread is ready to receive commands
             Message msg = mMainHandler.obtainMessage(CALLBACK_HANDLER_READY);
             mMainHandler.sendMessageDelayed(msg, 50);
         }
 
-
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             if (!mFinishing) {
                 switch (msg.what) {
-                    case ACTION_PAUSE:           pause();                    break;
-                    case ACTION_PLAY:            play();                     break;
-                    case ACTION_RELEASE:         release();                  break;
-                    case ACTION_SEEK_TO:         seekTo(msg.arg1);           break;
-                    case ACTION_SET_VOLUME:      setVolume((Float) msg.obj); break;
-                    case ACTION_POLL_IS_PLAYING: pollIsPlaying();            break;
-                    case ACTION_META: 		 onMetaDataReceived((Map<String, Object>)msg.obj); break;
+                    case ACTION_PAUSE:
+                        pause();
+                        break;
+                    case ACTION_PLAY:
+                        play();
+                        break;
+                    case ACTION_RELEASE:
+                        release();
+                        break;
+                    case ACTION_SEEK_TO:
+                        seekTo(msg.arg1);
+                        break;
+                    case ACTION_SET_VOLUME:
+                        setVolume((Float) msg.obj);
+                        break;
+                    case ACTION_POLL_IS_PLAYING:
+                        pollIsPlaying();
+                        break;
+                    case ACTION_META:
+                        onMetaDataReceived((Map<String, Object>) msg.obj);
+                        break;
 
                     default:
                         Assert.failUnhandledValue(TAG, msg.what, "PlayerHandler.handleMessage");
@@ -368,40 +412,33 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
             }
         }
 
-
         private void play() {
 
-            if (mExoPlayerLib == null)
-            {
+            if (mExoPlayerLib == null) {
                 // Create stream URL
                 String streamUrl = mSettings.getString(SETTINGS_STREAM_URL);
 
                 if (streamUrl == null) {
                     notifyStateChanged(STATE_ERROR, ERROR_INVALID_URL);
                     return;
-                }
-                else {
-                    if ( lowDelay == -1 || lowDelay > 0  ) {
+                } else {
+                    if (lowDelay == -1 || lowDelay > 0) {
                         int dPrebufferSeconds;
 
-                        if ( lowDelay == -1 ) {
+                        if (lowDelay == -1) {
                             dPrebufferSeconds = dPrebuffer / 1000;
                             dBufferGaurd = 2000;
-                        }
-                        else
-                        {
+                        } else {
                             dPrebufferSeconds = lowDelay;
                             dPrebuffer = lowDelay * 1000;
                             dRebuffer = dPrebuffer; // add 2 seconds to a rebuffer
                             dBufferGaurd = 10000;
                         }
 
-                        int fixUp = dPrebufferSeconds+1;
+                        int fixUp = dPrebufferSeconds + 1;
                         streamUrl = streamUrl + "&burst-time=" + fixUp;
 
-                    }
-                    else
-                    {
+                    } else {
                         dPrebuffer = 2500;
                         dRebuffer = 8000;
                         dBufferGaurd = 7000;
@@ -410,91 +447,84 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
 
                 notifyStateChanged(STATE_CONNECTING);
 
-                Log.i(TAG, "ExoPlayer URL: " +  streamUrl);
+                Log.i(TAG, "ExoPlayer URL: " + streamUrl);
 
                 Uri uri = Uri.parse(streamUrl);
 
-
                 int timeout = dRebuffer + dBufferGaurd;
-                Log.i(TAG, "ExoPlayer buffer start: " +  dPrebuffer + " rebuffer: " + dRebuffer + " timeout: " + timeout);
+                Log.i(TAG, "ExoPlayer buffer start: " + dPrebuffer + " rebuffer: " + dRebuffer + " timeout: " + timeout);
 
                 String userAgent = mSettings.getString(SETTINGS_USER_AGENT);
-                if ( userAgent == null ) {
+                if (userAgent == null) {
                     userAgent = "TxExoPlayer/MPEG Compatible";
                 }
 
 
-                     String transport = mSettings.getString(SETTINGS_TRANSPORT);
+                String transport = mSettings.getString(SETTINGS_TRANSPORT);
 
 
-                    BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 
-                    TrackSelector trackSelector = new DefaultTrackSelector(bandwidthMeter);
+                TrackSelector trackSelector = new DefaultTrackSelector(bandwidthMeter);
 
-                    DefaultRenderersFactory defaultRenderersFactory = new DefaultRenderersFactory(mContext);
+                DefaultRenderersFactory defaultRenderersFactory = new DefaultRenderersFactory(mContext);
 
-                   int minBufferMs = TRITON_BUFFER_SCALE_UP_FACTOR*DefaultLoadControl.DEFAULT_MIN_BUFFER_MS;
-                   int maxBufferMs = TRITON_BUFFER_SCALE_UP_FACTOR*DefaultLoadControl.DEFAULT_MAX_BUFFER_MS;
-                   int bufferForPlaybackMs = dPrebuffer;
-                   int bufferForPlaybackAfterRebufferMs = dRebuffer;                   
+                int minBufferMs = TRITON_BUFFER_SCALE_UP_FACTOR * DefaultLoadControl.DEFAULT_MIN_BUFFER_MS;
+                int maxBufferMs = TRITON_BUFFER_SCALE_UP_FACTOR * DefaultLoadControl.DEFAULT_MAX_BUFFER_MS;
+                int bufferForPlaybackMs = dPrebuffer;
+                int bufferForPlaybackAfterRebufferMs = dRebuffer;
 
-                   LoadControl loadControl = new DefaultLoadControl.Builder()
-                           .setBufferDurationsMs(minBufferMs, maxBufferMs, bufferForPlaybackMs, bufferForPlaybackAfterRebufferMs)
-                           .setAllocator(new DefaultAllocator(true, BUFFER_SEGMENT_SIZE,BUFFER_SEGMENTS))
-                           .createDefaultLoadControl();                            ;
+                LoadControl loadControl = new DefaultLoadControl.Builder()
+                        .setBufferDurationsMs(minBufferMs, maxBufferMs, bufferForPlaybackMs, bufferForPlaybackAfterRebufferMs)
+                        .setAllocator(new DefaultAllocator(true, BUFFER_SEGMENT_SIZE, BUFFER_SEGMENTS))
+                        .createDefaultLoadControl();
+                ;
 
+                mExoPlayerLib = new SimpleExoPlayer.Builder(mContext, defaultRenderersFactory)
+                        .setTrackSelector(trackSelector)
+                        .setLoadControl(loadControl)
+                        .build();
+                mExoPlayerLib.addListener(this);
 
-                    mExoPlayerLib =  ExoPlayerFactory.newSimpleInstance(mContext, defaultRenderersFactory ,trackSelector, loadControl);
-                    mExoPlayerLib.addListener(this);
+                // Produces DataSource instances through which media data is loaded.
+                DataSource.Factory dataSourceFactory;
+                if (streamUrl.startsWith("http")) {
+                    dataSourceFactory = new DefaultHttpDataSourceFactory(userAgent, null, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                            DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, SETTINGS_ALLOW_CROSS_PROTOCOL_REDIRECT);
+                } else {
+                    dataSourceFactory = new DefaultDataSourceFactory(mContext, userAgent);
+                }
 
-                    // Produces DataSource instances through which media data is loaded.
-                    DataSource.Factory dataSourceFactory;
-                    if(streamUrl.startsWith("http"))
-                    {
-                        dataSourceFactory = new DefaultHttpDataSourceFactory(userAgent,null,DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, SETTINGS_ALLOW_CROSS_PROTOCOL_REDIRECT);
-                    }
-                    else
-                    {
-                        dataSourceFactory = new DefaultDataSourceFactory(mContext,userAgent);
-                    }
+                // Produces Extractor instances for parsing the media data.
+                TdDefaultExtractorsFactory extractorsFactory = new TdDefaultExtractorsFactory(mMainHandler.mTdExoPlayer);
 
+                // This is the MediaSource representing the media to be played.
+                MediaSource audioSource;
+                if (PlayerConstants.TRANSPORT_HLS.equals(transport)) {
+                    audioSource = new HlsMediaSource.Factory(dataSourceFactory)
+                            .setAllowChunklessPreparation(true)
+                            .createMediaSource(uri);
+                } else {
+                    audioSource = new ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory).createMediaSource(uri);
+                }
 
-                    // Produces Extractor instances for parsing the media data.
-                    TdDefaultExtractorsFactory extractorsFactory = new TdDefaultExtractorsFactory(mMainHandler.mTdExoPlayer);
+                // Prepare the stream
+                Log.d(TAG, "Prepare ExoPlayer for: " + streamUrl);
 
-                    // This is the MediaSource representing the media to be played.
-                    MediaSource audioSource;
-                    if(PlayerConsts.TRANSPORT_HLS.equals(transport))
-                    {
-                        audioSource = new HlsMediaSource(uri, dataSourceFactory, null,  null);
-                    }
-                    else
-                    {
-                        audioSource = new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null);
-                    }
+                // Prepare the player with the source.
+                mExoPlayerLib.prepare(audioSource);
 
+                mExoPlayerLib.setPlayWhenReady(true);
 
-                    // Prepare the stream
-                    Log.d(TAG, "Prepare ExoPlayer for: " + streamUrl);
+                int position = mSettings.getInt(SETTINGS_POSITION);
+                if (position > 0) {
+                    mExoPlayerLib.seekTo(position);
+                }
 
-                    // Prepare the player with the source.
-                    mExoPlayerLib.prepare(audioSource);
-
-                    mExoPlayerLib.setPlayWhenReady(true);
-
-                    int position = mSettings.getInt(SETTINGS_POSITION);
-                    if (position > 0) {
-                        mExoPlayerLib.seekTo(position);
-                    }
-
-            }
-            else
-            {
+            } else {
                 mExoPlayerLib.setPlayWhenReady(true);
             }
         }
-
 
         private void pause() {
             if (mExoPlayerLib != null) {
@@ -506,7 +536,6 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
                 }
             }
         }
-
 
         private void release() {
             try {
@@ -523,38 +552,35 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
             }
         }
 
-
         private void onDurationChanged(int duration) {
             duration = StreamPlayer.normalizeDuration(duration);
 
             //if (mDuration != duration) {
-                mDuration = duration;
-                notifyInfo(INFO_DURATION_CHANGED, duration);
+            mDuration = duration;
+            notifyInfo(INFO_DURATION_CHANGED, duration);
             //}
         }
 
-
         private void onPlaybackStarted() {
             if (mExoPlayerLib != null) {
-                mDuration = (int)mExoPlayerLib.getDuration();
+                mDuration = (int) mExoPlayerLib.getDuration();
 
                 onDurationChanged(mDuration);
                 notifyStateChanged(STATE_PLAYING);
             }
         }
 
-
         private void notifyCuePointReceived(Bundle cuePoint, long delay) {
             Message msg = mMainHandler.obtainMessage(CALLBACK_CUE_POINT_RECEIVED, cuePoint);
-            if ( delay > 0 )
-                mMainHandler.sendMessageDelayed(msg, delay);        
+            if (delay > 0)
+                mMainHandler.sendMessageDelayed(msg, delay);
             else
                 mMainHandler.sendMessage(msg);
         }
 
         private void notifyMetadataReceived(Bundle metadata, long delay) {
             Message msg = mMainHandler.obtainMessage(CALLBACK_METADATA_RECEIVED, metadata);
-            if ( delay > 0 )
+            if (delay > 0)
                 mMainHandler.sendMessageDelayed(msg, delay);
             else
                 mMainHandler.sendMessage(msg);
@@ -583,7 +609,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
 
 
         private void pollIsPlaying() {
-            if (mFinishing || (mExoPlayerLib == null) ) {
+            if (mFinishing || (mExoPlayerLib == null)) {
                 return;
             }
 
@@ -611,7 +637,6 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
             }
         }
 
-
         public int getPosition() {
             if (mExoPlayerLib != null) {
                 try {
@@ -623,7 +648,6 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
 
             return POSITION_UNKNOWN;
         }
-
 
         public int getDuration() {
             return mDuration;
@@ -679,7 +703,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
             }
 
             return cuePoint;
-    }
+        }
 
 
         private static Bundle decodeAndoCuePoint(Map<String, Object> params, String type) {
@@ -698,11 +722,11 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
             switch (type) {
                 case "NowPlaying":
                     cuePoint.putString(CuePoint.CUE_TYPE, CuePoint.CUE_TYPE_VALUE_TRACK);
-                    decodeAndoString(params, "Album",     cuePoint, CuePoint.TRACK_ALBUM_NAME);
-                    decodeAndoString(params, "Artist",    cuePoint, CuePoint.TRACK_ARTIST_NAME);
-                    decodeAndoString(params, "IMGURL",    cuePoint, CuePoint.TRACK_COVER_URL);
-                    decodeAndoString(params, "Label",     cuePoint, CuePoint.TRACK_ALBUM_PUBLISHER);
-                    decodeAndoString(params, "Title",     cuePoint, CuePoint.CUE_TITLE);
+                    decodeAndoString(params, "Album", cuePoint, CuePoint.TRACK_ALBUM_NAME);
+                    decodeAndoString(params, "Artist", cuePoint, CuePoint.TRACK_ARTIST_NAME);
+                    decodeAndoString(params, "IMGURL", cuePoint, CuePoint.TRACK_COVER_URL);
+                    decodeAndoString(params, "Label", cuePoint, CuePoint.TRACK_ALBUM_PUBLISHER);
+                    decodeAndoString(params, "Title", cuePoint, CuePoint.CUE_TITLE);
                     decodeAndoString(params, "BuyNowURL", cuePoint, CuePoint.LEGACY_BUY_URL);
                     break;
 
@@ -710,7 +734,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
                     cuePoint.putString(CuePoint.CUE_TYPE, CuePoint.CUE_TYPE_VALUE_AD);
                     decodeAndoString(params, "BREAKADID", cuePoint, CuePoint.AD_ID);
                     decodeAndoString(params, "BREAKTYPE", cuePoint, CuePoint.AD_TYPE);
-                    decodeAndoString(params, "IMGURL",    cuePoint, CuePoint.LEGACY_AD_IMG_URL);
+                    decodeAndoString(params, "IMGURL", cuePoint, CuePoint.LEGACY_AD_IMG_URL);
                     break;
 
                 default:
@@ -731,17 +755,20 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         }
 
 
-       
-
-
         static String debugActionToStr(int action) {
             switch (action) {
-                case ACTION_PAUSE:           return "ACTION_PAUSE";
-                case ACTION_PLAY:            return "ACTION_PLAY";
-                case ACTION_RELEASE:         return "ACTION_RELEASE";
-                case ACTION_SEEK_TO:         return "ACTION_SEEK_TO";
-                case ACTION_SET_VOLUME:      return "ACTION_SET_VOLUME";
-                case ACTION_POLL_IS_PLAYING: return "ACTION_POLL_IS_PLAYING";
+                case ACTION_PAUSE:
+                    return "ACTION_PAUSE";
+                case ACTION_PLAY:
+                    return "ACTION_PLAY";
+                case ACTION_RELEASE:
+                    return "ACTION_RELEASE";
+                case ACTION_SEEK_TO:
+                    return "ACTION_SEEK_TO";
+                case ACTION_SET_VOLUME:
+                    return "ACTION_SET_VOLUME";
+                case ACTION_POLL_IS_PLAYING:
+                    return "ACTION_POLL_IS_PLAYING";
                 default:
                     Assert.failUnhandledValue(TAG, action, "debugActionToStr");
                     return "UNKNOWN";
@@ -749,12 +776,10 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         }
 
 
-        private boolean isMountEmpty()
-        {
+        private boolean isMountEmpty() {
             //If Mount is null or empty, it means the TdExoPlayer is setup to play an on demand stream
-            if(mSettings != null)
-            {
-               return TextUtils.isEmpty(mSettings.getString(SETTINGS_STATION_MOUNT));
+            if (mSettings != null) {
+                return TextUtils.isEmpty(mSettings.getString(SETTINGS_STATION_MOUNT));
             }
             return false;
         }
@@ -765,33 +790,29 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            Log.i(TAG, "onPlayerStateChanged  playWhenReady: " + playWhenReady+ " playbackState:" + playbackState);
+            Log.i(TAG, "onPlayerStateChanged  playWhenReady: " + playWhenReady + " playbackState:" + playbackState);
             // Anytime we change state, we should cancel the bufferTimer if it's running
-            if ( bufferTimer != null )
-            {
+            if (bufferTimer != null) {
                 bufferTimer.cancel();
                 bufferTimer = null;
             }
             switch (playbackState) {
                 case ExoPlayer.STATE_IDLE:
                     //ignore
-                     break;
+                    break;
                 case ExoPlayer.STATE_BUFFERING:
                     notifyInfo(INFO_BUFFERING_START);
 
-                    bufferTimer = new CountDownTimer(dRebuffer + dBufferGaurd, 900)
-                    {
+                    bufferTimer = new CountDownTimer(dRebuffer + dBufferGaurd, 900) {
 
                         public void onTick(long millisUntilFinished) {
                             Log.i(TAG, "ExoPlayer buffer count down timer: " + millisUntilFinished / 1000);
                         }
 
-                        public void onFinish()
-                        {
+                        public void onFinish() {
                             bufferTimer = null;
 
-                            if ( lowDelay == -1 )
-                            {
+                            if (lowDelay == -1) {
                                 dPrebufferMultiplier = 2;
                                 dPrebuffer = dPrebuffer * dPrebufferMultiplier;
                                 dRebuffer = dRebuffer * dPrebufferMultiplier;
@@ -805,11 +826,9 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
                                     Log.i(TAG, "ExoPlayer resetting after 3 increases, must reconnect");
                                     notifyStateChanged(STATE_ERROR, ERROR_UNEXPECTED_END_OF_MEDIA);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 //Log.i(TAG, "ExoPlayer timeout");
-                               //notifyStateChanged(STATE_ERROR, ERROR_UNEXPECTED_END_OF_MEDIA);
+                                //notifyStateChanged(STATE_ERROR, ERROR_UNEXPECTED_END_OF_MEDIA);
                             }
                         }
 
@@ -822,10 +841,9 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
                     break;
 
                 case ExoPlayer.STATE_ENDED:
-                    if ( mDuration > 0 && isMountEmpty())  //it is an on Demand streaming
+                    if (mDuration > 0 && isMountEmpty())  //it is an on Demand streaming
                         notifyStateChanged(STATE_COMPLETED);
-                    else
-                    {
+                    else {
                         notifyStateChanged(STATE_ERROR, ERROR_UNEXPECTED_END_OF_MEDIA);
                     }
 
@@ -855,12 +873,12 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         }
 
         @Override
-        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections)
-        { Log.i(TAG, "ExoPlayer onTracksChanged()");}
+        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+            Log.i(TAG, "ExoPlayer onTracksChanged()");
+        }
 
         @Override
-        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters)
-        {
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
             Log.e(TAG, "ExoPlayer onPlaybackParametersChanged()");
         }
 
@@ -873,9 +891,8 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         @Override
         public void onPlayerError(ExoPlaybackException e) {
             Log.e(TAG, "ExoPlayer error: " + e.getMessage());
-            Log.e(TAG, "ExoPlayer Network connected: " +  com.tritondigital.util.NetworkUtil.isNetworkConnected(mContext));
-            if(!isMountEmpty())
-            {
+            Log.e(TAG, "ExoPlayer Network connected: " + com.tritondigital.util.NetworkUtil.isNetworkConnected(mContext));
+            if (!isMountEmpty()) {
                 Log.e(TAG, "ExoPlayer onError: we restart the player");
                 mExoPlayerLib.stop();
                 mExoPlayerLib.release();
@@ -901,33 +918,31 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener
         }
 
 
-        public void onMetaDataReceived( Map<String, Object> metadata) {
-            long nowTimeStamp = mExoPlayerLib.getCurrentPosition()*1000;
-            long whenTimeStamp = (long ) metadata.get(TdMetaDataListener.KEY_TIMESTAMP);
-            long delay = (whenTimeStamp - nowTimeStamp)/1000;
+        public void onMetaDataReceived(Map<String, Object> metadata) {
+            long nowTimeStamp = mExoPlayerLib.getCurrentPosition() * 1000;
+            long whenTimeStamp = (long) metadata.get(TdMetaDataListener.KEY_TIMESTAMP);
+            long delay = (whenTimeStamp - nowTimeStamp) / 1000;
             String name = (String) metadata.get(TdMetaDataListener.KEY_NAME);
 
-            if(TdMetaDataListener.NAME_CUEPOINT.equalsIgnoreCase(name)){
+            if (TdMetaDataListener.NAME_CUEPOINT.equalsIgnoreCase(name)) {
                 Bundle cuePoint = decodeCuePoint(metadata);
 
-                if ( cuePoint != null) {
-                    Log.d(TAG, "CuePoint Received:  Delay: "+ delay );
+                if (cuePoint != null) {
+                    Log.d(TAG, "CuePoint Received:  Delay: " + delay);
                     notifyCuePointReceived(cuePoint, delay);
                 }
-            }
-            else if(TdMetaDataListener.NAME_METADATA.equalsIgnoreCase(name)){
+            } else if (TdMetaDataListener.NAME_METADATA.equalsIgnoreCase(name)) {
                 Bundle msg = new Bundle();
                 Map<String, Object> params = (Map<String, Object>) metadata.get(TdMetaDataListener.NAME_METADATA);
-                if(params != null) {
+                if (params != null) {
                     for (Map.Entry<String, Object> entry : params.entrySet()) {
                         String key = entry.getKey();
                         Object value = entry.getValue();
 
-                        if(value != null) {
+                        if (value != null) {
                             String valueStr = value.toString();
                             msg.putString(key, valueStr);
-                        }
-                        else{
+                        } else {
                             msg.putString(key, null);
                         }
                     }

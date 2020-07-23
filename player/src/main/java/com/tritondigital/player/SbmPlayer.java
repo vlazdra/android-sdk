@@ -149,7 +149,7 @@ public final class SbmPlayer extends MediaPlayer {
     /**
      * @copybrief PlayerConsts::SBM_URL
      */
-    public static final String SETTINGS_SBM_URL = PlayerConsts.SBM_URL;
+    public static final String SETTINGS_SBM_URL = PlayerConstants.SBM_URL;
 
     private static final String TAG = Log.makeTag("SbmPlayer");
     private static final int    MAX_ERROR_RECOVERY = 10;

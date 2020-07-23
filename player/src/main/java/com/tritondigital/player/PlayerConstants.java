@@ -3,7 +3,7 @@ package com.tritondigital.player;
 /**
  * File used by Doxygen for documentation consistency. You don't need to use this class.
  */
-public final class PlayerConsts {
+public final class PlayerConstants {
 
     /** _String_ - Authentication token */
     public static final String AUTH_TOKEN  = "auth_token";
@@ -80,5 +80,6 @@ public final class PlayerConsts {
 
     static final String USER_AGENT = "user_agent";
 
-    private PlayerConsts() {}
+    private PlayerConstants() {
+    }
 }
