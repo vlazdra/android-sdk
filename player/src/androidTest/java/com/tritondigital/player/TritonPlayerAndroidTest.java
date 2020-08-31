@@ -38,19 +38,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-
 @RunWith(AndroidJUnit4.class)
-public class TritonPlayerAndroidTest
-{
+public class TritonPlayerAndroidTest {
     private final static String TAG = "TritonPlayerAndroidTest";
-    private static final int MSG_CREATE_PLAYER        = 101;
-    private static final int MSG_RELEASE_PLAYER       = 104;
+    private static final int MSG_CREATE_PLAYER = 101;
+    private static final int MSG_RELEASE_PLAYER = 104;
 
-    private static final String PODCAST_TEST_URL      = "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
-
+    private static final String PODCAST_TEST_URL = "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
 
     static float VOLUME = 0.5f;
-
 
     static Context TARGET_CONTEXT;
     static Handler MAIN_LOOP_HANDLER;
@@ -61,117 +57,95 @@ public class TritonPlayerAndroidTest
 
     private String mLiveStreamingUrl;
 
-
     @BeforeClass
-    public static void setAllUp()
-    {
-        TARGET_CONTEXT    = InstrumentationRegistry.getTargetContext();
-        LATCH             = new CountDownLatch(1);
-        AUDIO_MANAGER     = (AudioManager)TARGET_CONTEXT.getSystemService(Context.AUDIO_SERVICE);
-        MAIN_LOOP_HANDLER = new android.os.Handler(Looper.getMainLooper())
-        {
+    public static void setAllUp() {
+        TARGET_CONTEXT = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        LATCH = new CountDownLatch(1);
+        AUDIO_MANAGER = (AudioManager) TARGET_CONTEXT.getSystemService(Context.AUDIO_SERVICE);
+        MAIN_LOOP_HANDLER = new android.os.Handler(Looper.getMainLooper()) {
             @Override
-            public void handleMessage(Message message)
-            {
+            public void handleMessage(Message message) {
                 int what = message.what;
                 Bundle settings = message.getData();
-                switch (what)
-                {
+                switch (what) {
                     case MSG_CREATE_PLAYER:
                         TRITON_PLAYER = new TritonPlayer(TARGET_CONTEXT, settings);
                         break;
                     case MSG_RELEASE_PLAYER:
-                         TRITON_PLAYER.release();
-                         break;
+                        TRITON_PLAYER.release();
+                        break;
                 }
             }
         };
 
         //Verify Network is available
-        ConnectivityManager manager = (ConnectivityManager)TARGET_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info            = manager.getActiveNetworkInfo();
-        assertTrue( info != null && info.isConnected() );
+        ConnectivityManager manager = (ConnectivityManager) TARGET_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        assertTrue(info != null && info.isConnected());
 
 
         //Wake up the device if it is on sleep mode
         PowerManager pm = (PowerManager) TARGET_CONTEXT.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-        wakeLock.acquire(3*60*1000);//3 minutes
+        wakeLock.acquire(3 * 60 * 1000);//3 minutes
 
         createPodcastLocalFile();
     }
 
     @AfterClass
-    public static void tearAllDown()
-    {
+    public static void tearAllDown() {
         MAIN_LOOP_HANDLER.sendEmptyMessage(MSG_RELEASE_PLAYER);
         TARGET_CONTEXT = null;
         LOCAL_FILE.delete();
-        LOCAL_FILE =null;
+        LOCAL_FILE = null;
     }
-
 
 
     @Before
-    public void setUp()
-    {
-       // verifyConstructorParams();
+    public void setUp() {
+        // verifyConstructorParams();
     }
 
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         //Do nothing
     }
 
 
-    private void verifyConstructorParams()
-    {
+    private void verifyConstructorParams() {
         //Validate Context cannot be null
         TritonPlayer aPlayer = null;
-        try
-        {
+        try {
             aPlayer = new TritonPlayer(null, new Bundle());
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             assertTrue(e instanceof java.lang.IllegalArgumentException);
         }
 
-        assertTrue(aPlayer ==null);
+        assertTrue(aPlayer == null);
 
 
         //Validate player settings cannot be null
-        try
-        {
+        try {
             aPlayer = new TritonPlayer(TARGET_CONTEXT, null);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             assertTrue(e instanceof java.lang.IllegalArgumentException);
         }
-        assertTrue(aPlayer ==null);
+        assertTrue(aPlayer == null);
     }
 
 
     @Test
-    public void canPlayStationFlvMount()
-    {
+    public void canPlayStationFlvMount() {
         doProvisioning("MOBILEFM_AACV2", TritonPlayer.TRANSPORT_FLV);
         createAndSendMessage(createStationFlvMountPlayerSettings(), MSG_CREATE_PLAYER);
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
                     assertNotNull(TRITON_PLAYER);
                     assertNotNull(TRITON_PLAYER.getSettings());
                     TRITON_PLAYER.setVolume(VOLUME);
-                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener()
-                    {
-                        public void onStateChanged(MediaPlayer player, int state)
-                        {
+                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener() {
+                        public void onStateChanged(MediaPlayer player, int state) {
                             assertTrue(player == TRITON_PLAYER);
                             assertTrue(state != TritonPlayer.STATE_ERROR);
                         }
@@ -196,9 +170,7 @@ public class TritonPlayerAndroidTest
                     state = TRITON_PLAYER.getState();
                     assertTrue(state == TritonPlayer.STATE_RELEASED);
                     //assertFalse(isMusicPlaying());
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     throw new AssertionFailedError("Should not throw an Exception");
                 }
             }
@@ -207,23 +179,17 @@ public class TritonPlayerAndroidTest
     }
 
     @Test
-    public void canPlayStationHlsMount()
-    {
+    public void canPlayStationHlsMount() {
         doProvisioning("TRITONRADIOMUSICAAC", TritonPlayer.TRANSPORT_HLS);
         createAndSendMessage(createStationHlsMountPlayerSettings(), MSG_CREATE_PLAYER);
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
                     assertNotNull(TRITON_PLAYER);
                     assertNotNull(TRITON_PLAYER.getSettings());
                     TRITON_PLAYER.setVolume(VOLUME);
-                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener()
-                    {
-                        public void onStateChanged(MediaPlayer player, int state)
-                        {
+                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener() {
+                        public void onStateChanged(MediaPlayer player, int state) {
                             assertTrue(player == TRITON_PLAYER);
                             assertTrue(state != TritonPlayer.STATE_ERROR);
                         }
@@ -248,9 +214,7 @@ public class TritonPlayerAndroidTest
                     state = TRITON_PLAYER.getState();
                     assertTrue(state == TritonPlayer.STATE_RELEASED);
                     //assertFalse(isMusicPlaying());
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     throw new AssertionFailedError("Should not throw an Exception");
                 }
             }
@@ -259,24 +223,18 @@ public class TritonPlayerAndroidTest
     }
 
     @Test
-    public void canPlayOnDemandStream()
-    {
+    public void canPlayOnDemandStream() {
         createAndSendMessage(createOnDemandStreamPlayerSettings(), MSG_CREATE_PLAYER);
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
                     assertNotNull(TRITON_PLAYER);
                     assertNotNull(TRITON_PLAYER.getSettings());
                     TRITON_PLAYER.setVolume(VOLUME);
-                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener()
-                    {
-                        public void onStateChanged(MediaPlayer player, int state)
-                        {
-                             assertTrue(player == TRITON_PLAYER);
-                             assertTrue(state != TritonPlayer.STATE_ERROR);
+                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener() {
+                        public void onStateChanged(MediaPlayer player, int state) {
+                            assertTrue(player == TRITON_PLAYER);
+                            assertTrue(state != TritonPlayer.STATE_ERROR);
                         }
                     });
 
@@ -285,7 +243,7 @@ public class TritonPlayerAndroidTest
                     waitFor(10);
                     int state = TRITON_PLAYER.getState();
                     assertFalse(state == TritonPlayer.STATE_ERROR);
-                   // assertTrue(isMusicPlaying());
+                    // assertTrue(isMusicPlaying());
 
                     //Pause
                     TRITON_PLAYER.pause();
@@ -302,7 +260,7 @@ public class TritonPlayerAndroidTest
 
                     //Change volume
                     float volume = TRITON_PLAYER.getVolume();
-                    TRITON_PLAYER.setVolume(volume+ 0.3f);
+                    TRITON_PLAYER.setVolume(volume + 0.3f);
                     waitFor(1);
                     //assertTrue(TRITON_PLAYER.getVolume() == (volume+ 0.3f));
 
@@ -327,9 +285,7 @@ public class TritonPlayerAndroidTest
                     state = TRITON_PLAYER.getState();
                     assertTrue(state == TritonPlayer.STATE_RELEASED);
                     //assertFalse(isMusicPlaying());
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     throw new AssertionFailedError("Should not throw an Exception");
                 }
             }
@@ -339,24 +295,18 @@ public class TritonPlayerAndroidTest
 
 
     @Test
-    public void canPlayLocalFile()
-    {
+    public void canPlayLocalFile() {
         createAndSendMessage(createLocalFilePlayerSettings(), MSG_CREATE_PLAYER);
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
                     assertTrue(LOCAL_FILE.exists());
                     assertNotNull(TRITON_PLAYER);
                     assertNotNull(TRITON_PLAYER.getSettings());
                     Bundle set = TRITON_PLAYER.getSettings();
                     TRITON_PLAYER.setVolume(VOLUME);
-                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener()
-                    {
-                        public void onStateChanged(MediaPlayer player, int state)
-                        {
+                    TRITON_PLAYER.setOnStateChangedListener(new TritonPlayer.OnStateChangedListener() {
+                        public void onStateChanged(MediaPlayer player, int state) {
                             assertTrue(player == TRITON_PLAYER);
                             assertTrue(state != TritonPlayer.STATE_ERROR);
                         }
@@ -384,7 +334,7 @@ public class TritonPlayerAndroidTest
 
                     //Change volume
                     float volume = TRITON_PLAYER.getVolume();
-                    TRITON_PLAYER.setVolume(volume+ 0.3f);
+                    TRITON_PLAYER.setVolume(volume + 0.3f);
                     waitFor(1);
                     //assertTrue(TRITON_PLAYER.getVolume() == (volume+ 0.3f));
 
@@ -409,9 +359,7 @@ public class TritonPlayerAndroidTest
                     state = TRITON_PLAYER.getState();
                     assertTrue(state == TritonPlayer.STATE_RELEASED);
                     //assertFalse(isMusicPlaying());
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     throw new AssertionFailedError("Should not throw an Exception");
                 }
             }
@@ -420,14 +368,12 @@ public class TritonPlayerAndroidTest
     }
 
 
-
-    private Bundle createStationFlvMountPlayerSettings()
-    {
+    private Bundle createStationFlvMountPlayerSettings() {
         Bundle b = new Bundle();
-        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER,"Triton Digital");
-        b.putString(TritonPlayer.SETTINGS_STATION_NAME,"Mobile FM");
+        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER, "Triton Digital");
+        b.putString(TritonPlayer.SETTINGS_STATION_NAME, "Mobile FM");
 
-        if(mLiveStreamingUrl != null)
+        if (mLiveStreamingUrl != null)
             b.putString(TritonPlayer.SETTINGS_STREAM_URL, mLiveStreamingUrl);
         else
             b.putString(TritonPlayer.SETTINGS_STATION_MOUNT, "MOBILEFM_AACV2");
@@ -436,14 +382,13 @@ public class TritonPlayerAndroidTest
     }
 
 
-    private Bundle createStationHlsMountPlayerSettings()
-    {
+    private Bundle createStationHlsMountPlayerSettings() {
         Bundle b = new Bundle();
-        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER,"Triton Digital");
-        b.putString(TritonPlayer.SETTINGS_STATION_NAME,"Mobile FM");
+        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER, "Triton Digital");
+        b.putString(TritonPlayer.SETTINGS_STATION_NAME, "Mobile FM");
         b.putString(TritonPlayer.SETTINGS_TRANSPORT, TritonPlayer.TRANSPORT_HLS);
 
-        if(mLiveStreamingUrl != null)
+        if (mLiveStreamingUrl != null)
             b.putString(TritonPlayer.SETTINGS_STREAM_URL, mLiveStreamingUrl);
         else
             b.putString(TritonPlayer.SETTINGS_STATION_MOUNT, "TRITONRADIOMUSICAAC");
@@ -451,54 +396,46 @@ public class TritonPlayerAndroidTest
     }
 
 
-    private Bundle createOnDemandStreamPlayerSettings()
-    {
+    private Bundle createOnDemandStreamPlayerSettings() {
         Bundle b = new Bundle();
-        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER,"Triton Digital");
-        b.putString(TritonPlayer.SETTINGS_STATION_NAME,"Mobile FM");
-        b.putString(TritonPlayer.SETTINGS_STREAM_URL,PODCAST_TEST_URL);
+        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER, "Triton Digital");
+        b.putString(TritonPlayer.SETTINGS_STATION_NAME, "Mobile FM");
+        b.putString(TritonPlayer.SETTINGS_STREAM_URL, PODCAST_TEST_URL);
 
         return b;
     }
 
-    private Bundle createOnDemandStreamPlayerSettingsWo()
-    {
+    private Bundle createOnDemandStreamPlayerSettingsWo() {
         Bundle b = new Bundle();
-        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER,"Triton Digital");
-        b.putString(TritonPlayer.SETTINGS_STREAM_URL,"Mobile FM");
-        b.putString(TritonPlayer.SETTINGS_STREAM_URL,PODCAST_TEST_URL);
+        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER, "Triton Digital");
+        b.putString(TritonPlayer.SETTINGS_STREAM_URL, "Mobile FM");
+        b.putString(TritonPlayer.SETTINGS_STREAM_URL, PODCAST_TEST_URL);
 
         return b;
     }
 
 
-    private Bundle createLocalFilePlayerSettings()
-    {
+    private Bundle createLocalFilePlayerSettings() {
         Bundle b = new Bundle();
-        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER,"Triton Digital");
-        b.putString(TritonPlayer.SETTINGS_STATION_NAME,"Mobile FM");
-        b.putString(TritonPlayer.SETTINGS_STREAM_URL,LOCAL_FILE.getPath());
+        b.putString(TritonPlayer.SETTINGS_STATION_BROADCASTER, "Triton Digital");
+        b.putString(TritonPlayer.SETTINGS_STATION_NAME, "Mobile FM");
+        b.putString(TritonPlayer.SETTINGS_STREAM_URL, LOCAL_FILE.getPath());
         return b;
     }
 
 
-    private void doProvisioning(final String mount, final String transport)
-    {
+    private void doProvisioning(final String mount, final String transport) {
         mLiveStreamingUrl = null;
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
+        Runnable r = new Runnable() {
+            public void run() {
                 Provisioning parser = new Provisioning();
                 parser.setMount(mount, transport);
-                parser.setListener(new Provisioning.Listener()
-                {
+                parser.setListener(new Provisioning.Listener() {
                     @Override
-                    public void onProvisioningSuccess(Provisioning prov, Bundle result)
-                    {
+                    public void onProvisioningSuccess(Provisioning prov, Bundle result) {
                         assertNotNull(result);
                         ArrayList<Bundle> servers = result.getParcelableArrayList(Provisioning.Result.SERVERS);
-                        assertTrue(servers!= null && servers.size() > 0);
+                        assertTrue(servers != null && servers.size() > 0);
                         Bundle server = servers.get(0);
                         ArrayList<String> ports = server.getStringArrayList(Provisioning.Result.Server.PORTS);
 
@@ -506,12 +443,11 @@ public class TritonPlayerAndroidTest
                                 + ports.get(0) + '/' + result.getString(Provisioning.Result.MOUNT);
 
                         String streamSuffix = result.getString(Provisioning.Result.MOUNT_SUFFIX);
-                        mLiveStreamingUrl    = (streamSuffix == null) ? baseUrl : (baseUrl + streamSuffix);
+                        mLiveStreamingUrl = (streamSuffix == null) ? baseUrl : (baseUrl + streamSuffix);
                     }
 
                     @Override
-                    public void onProvisioningFailed(Provisioning src, int errorCode)
-                    {
+                    public void onProvisioningFailed(Provisioning src, int errorCode) {
 
                     }
                 });
@@ -525,13 +461,11 @@ public class TritonPlayerAndroidTest
     }
 
 
-    private boolean isMusicPlaying()
-    {
+    private boolean isMusicPlaying() {
         return AUDIO_MANAGER.isMusicActive();
     }
 
-    private void createAndSendMessage(Bundle playerSettings, int what)
-    {
+    private void createAndSendMessage(Bundle playerSettings, int what) {
         Message msg = MAIN_LOOP_HANDLER.obtainMessage(what);
         msg.setData(playerSettings);
 
@@ -541,79 +475,70 @@ public class TritonPlayerAndroidTest
     }
 
 
-    private static void waitFor(long seconds)
-    {
-        try
-        {
+    private static void waitFor(long seconds) {
+        try {
             LATCH.await(seconds, TimeUnit.SECONDS);
+        } catch (Exception e) {
         }
-        catch(Exception e){}
     }
 
 
-    private static void createPodcastLocalFile()
-    {
-       Runnable r = new Runnable()
-       {
-           public void run()
-           {
-               InputStream is = null;
-               HttpURLConnection conn = null;
+    private static void createPodcastLocalFile() {
+        Runnable r = new Runnable() {
+            public void run() {
+                InputStream is = null;
+                HttpURLConnection conn = null;
 
-               try
-               {
-                   LOCAL_FILE        = File.createTempFile("podcast", "mp3");
-                   LOCAL_FILE.deleteOnExit();
+                try {
+                    LOCAL_FILE = File.createTempFile("podcast", "mp3");
+                    LOCAL_FILE.deleteOnExit();
 
-                   URL url = new URL(PODCAST_TEST_URL);
+                    URL url = new URL(PODCAST_TEST_URL);
 
 
-                   conn = (HttpURLConnection) url.openConnection();
-                   conn.setUseCaches(true);
-                   conn.setConnectTimeout(12000);
-                   conn.setReadTimeout(15000);
-                   conn.setRequestMethod("GET");
-                   conn.setDoInput(true);
-                   conn.connect();
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setUseCaches(true);
+                    conn.setConnectTimeout(12000);
+                    conn.setReadTimeout(15000);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    conn.connect();
 
-                   int responseCode = conn.getResponseCode();
-                   if(responseCode == HttpURLConnection.HTTP_OK)
-                   {
-                       is = conn.getInputStream();
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
 
-                       FileOutputStream fos  = new FileOutputStream(LOCAL_FILE);
+                        FileOutputStream fos = new FileOutputStream(LOCAL_FILE);
 
-                       byte[] buffer = new byte[1024];
-                       int buffLength;
-                       long downloadedLength = 0;
+                        byte[] buffer = new byte[1024];
+                        int buffLength;
+                        long downloadedLength = 0;
 
-                       while ((buffLength = is.read(buffer)) != -1) {
-                           downloadedLength += buffLength;
-                           fos.write(buffer, 0, buffLength);
-                       }
-                       fos.close();
-                       is.close();
-                   }
-               }
-               catch(Exception e)
-               {
-                   Log.w(TAG, e, "Download exception for: " + PODCAST_TEST_URL);
-               }
-               finally {
-                   if (conn != null) {
-                       conn.disconnect();
-                   }
+                        while ((buffLength = is.read(buffer)) != -1) {
+                            downloadedLength += buffLength;
+                            fos.write(buffer, 0, buffLength);
+                        }
+                        fos.close();
+                        is.close();
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, e, "Download exception for: " + PODCAST_TEST_URL);
+                } finally {
+                    if (conn != null) {
+                        conn.disconnect();
+                    }
 
-                   try {
-                       if (is != null) {
-                           is.close();
-                       }
-                   } catch (final IOException e) {}
+                    try {
+                        if (is != null) {
+                            is.close();
+                        }
+                    } catch (final IOException e) {
+                    }
 
 
-               }
-           }
-       };
+                }
+            }
+        };
 
         new Thread(r).start();
         waitFor(3);

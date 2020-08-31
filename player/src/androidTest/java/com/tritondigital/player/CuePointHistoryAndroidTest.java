@@ -21,45 +21,37 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-
-public class CuePointHistoryAndroidTest
-{
+public class CuePointHistoryAndroidTest {
     private CuePointHistory mParser;
     private Handler mHandler;
     private CountDownLatch mLatch = new CountDownLatch(1);
-    private Context mContext;
-
+    private Context mContext; // TODO: Not used, investigate and remove
 
     @Before
-    public void setUp()
-    {
-        mContext = InstrumentationRegistry.getTargetContext();
+    public void setUp() {
+        mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mHandler = new Handler(mContext.getMainLooper());
         mParser = new CuePointHistory();
     }
 
 
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         mParser = null;
     }
 
 
     @Test
-    public void canGetLastCuePoint()
-    {
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
+    public void canGetLastCuePoint() {
+        Runnable r = new Runnable() {
+            public void run() {
                 mParser.setMount("S1_FLV_MP3");
                 mParser.setMaxItems(1);
                 mParser.setListener(new CuePointHistory.CuePointHistoryListener() {
                     @Override
                     public void onCuePointHistoryReceived(CuePointHistory src, List<Bundle> cuePoints) {
-                        assertTrue(cuePoints!= null && cuePoints.size() > 0);
-                        assertTrue(cuePoints.size() ==1);
+                        assertTrue(cuePoints != null && cuePoints.size() > 0);
+                        assertTrue(cuePoints.size() == 1);
                     }
 
                     @Override
@@ -78,19 +70,16 @@ public class CuePointHistoryAndroidTest
 
 
     @Test
-    public void canGetLast25CuePoints()
-    {
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
+    public void canGetLast25CuePoints() {
+        Runnable r = new Runnable() {
+            public void run() {
                 mParser.setMount("S1_FLV_MP3");
                 mParser.setMaxItems(25);
                 mParser.setListener(new CuePointHistory.CuePointHistoryListener() {
                     @Override
                     public void onCuePointHistoryReceived(CuePointHistory src, List<Bundle> cuePoints) {
-                        assertTrue(cuePoints!= null && cuePoints.size() > 0);
-                        assertTrue(cuePoints.size() ==25);
+                        assertTrue(cuePoints != null && cuePoints.size() > 0);
+                        assertTrue(cuePoints.size() == 25);
                     }
 
                     @Override
@@ -109,12 +98,9 @@ public class CuePointHistoryAndroidTest
 
 
     @Test
-    public void cannotGetLastCuePointWithInvalidMount()
-    {
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
+    public void cannotGetLastCuePointWithInvalidMount() {
+        Runnable r = new Runnable() {
+            public void run() {
                 mParser.setMount("");
                 mParser.setMaxItems(25);
                 mParser.setListener(new CuePointHistory.CuePointHistoryListener() {
@@ -138,13 +124,11 @@ public class CuePointHistoryAndroidTest
     }
 
 
-    private void waitFor(long seconds)
-    {
-        try
-        {
+    private void waitFor(long seconds) {
+        try {
             mLatch.await(seconds, TimeUnit.SECONDS);
+        } catch (Exception e) {
         }
-        catch(Exception e){}
     }
 
 }

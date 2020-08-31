@@ -1,50 +1,38 @@
 package com.tritondigital.player;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.content.res.Resources;
+
+import com.google.android.exoplayer2.util.ParsableByteArray;
+import com.tritondigital.player.exoplayer.extractor.flv.TdMetaDataListener;
+import com.tritondigital.player.exoplayer.extractor.flv.TdScriptTagPayloadLoader;
+
 import junit.framework.AssertionFailedError;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.tritondigital.player.exoplayer.extractor.flv.TdScriptTagPayloadLoader;
-import com.tritondigital.player.exoplayer.extractor.flv.TdMetaDataListener;
-import com.google.android.exoplayer2.util.ParsableByteArray;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Map;
-import java.io.File;
-import java.io.FileInputStream;
-
 
 @RunWith(MockitoJUnitRunner.class)
-public class TdExoPlayerTest
-{
-    @Mock
-    Context mMockContext;
+public class TdExoPlayerTest {
 
     TdExoPlayer mTdExoPlayer;
     Bundle mPlayerSettings;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         mPlayerSettings = new Bundle();
         mTdExoPlayer = mock(TdExoPlayer.class);
 
@@ -53,47 +41,34 @@ public class TdExoPlayerTest
     }
 
     @Test
-    public void canConstruct()
-    {
+    public void canConstruct() {
         assertNotNull(mTdExoPlayer);
     }
 
     @Test
-    public void testPlay()
-    {
-        try
-        {
+    public void testPlay() {
+        try {
             mTdExoPlayer.play();
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new AssertionFailedError("Should not throw an Exception");
         }
 
     }
 
     @Test
-    public void testPause()
-    {
-        try
-        {
+    public void testPause() {
+        try {
             mTdExoPlayer.pause();
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new AssertionFailedError("Should not throw an Exception");
         }
     }
 
     @Test
-    public void testStop()
-    {
-        try
-        {
+    public void testStop() {
+        try {
             mTdExoPlayer.stop();
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new AssertionFailedError("Should not throw an Exception");
         }
     }
@@ -103,16 +78,15 @@ public class TdExoPlayerTest
         File file = new File(resource.getPath());
         FileInputStream inputStream = new FileInputStream(file);
 
-        byte fileContent[] = new byte[(int)file.length()];
+        byte fileContent[] = new byte[(int) file.length()];
         inputStream.read(fileContent);
         inputStream.close();
         return new ParsableByteArray(fileContent);
     }
 
     @Test
-    public void testFlvMetadataParser()
-    {
-        class TestListener implements TdMetaDataListener{
+    public void testFlvMetadataParser() {
+        class TestListener implements TdMetaDataListener {
             public boolean called = false;
             public Map<String, Object> metadata = null;
 
@@ -122,14 +96,13 @@ public class TdExoPlayerTest
                 this.metadata = metadata;
             }
 
-            public void reset(){
+            public void reset() {
                 called = false;
                 metadata = null;
             }
         }
 
-        try
-        {
+        try {
             TestListener listener = new TestListener();
             TdScriptTagPayloadLoader loader = new TdScriptTagPayloadLoader(null, listener);
 
@@ -150,12 +123,10 @@ public class TdExoPlayerTest
             listener.reset();
             loader.consume(onMetaDataNotEmpty, 0);
             assertTrue(listener.metadata.containsKey(TdMetaDataListener.NAME_METADATA));
-            Map<String, Object> metadata = (Map<String, Object>)listener.metadata.get(TdMetaDataListener.NAME_METADATA);
-            String streamTitle = (String)metadata.get("StreamTitle");
+            Map<String, Object> metadata = (Map<String, Object>) listener.metadata.get(TdMetaDataListener.NAME_METADATA);
+            String streamTitle = (String) metadata.get("StreamTitle");
             assertTrue(streamTitle.contains("SAM SMITH"));
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new AssertionFailedError("Should not throw an Exception");
         }
     }

@@ -22,52 +22,43 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-public class ProvisioningAndroidTest
-{
+public class ProvisioningAndroidTest {
     private Provisioning mParser;
     private Handler mHandler;
     private CountDownLatch mLatch = new CountDownLatch(1);
-    private Context mContext;
-
+    private Context mContext; // TODO: not used, investigate and remove
 
     @Before
-    public void setUp()
-    {
-        mContext = InstrumentationRegistry.getTargetContext();
+    public void setUp() {
+        mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mHandler = new Handler(mContext.getMainLooper());
         mParser = new Provisioning();
     }
 
 
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         mParser = null;
     }
 
 
-
     @Test
-    public void canDoProvisioningWithValidMount()
-    {
+    public void canDoProvisioningWithValidMount() {
         assertNotNull(mParser);
         mParser.setMount("MOBILEFM_AACV2", "FLV");
-        mParser.setListener(new Provisioning.Listener()
-        {
+        mParser.setListener(new Provisioning.Listener() {
             @Override
-            public void onProvisioningSuccess(Provisioning prov, Bundle result)
-            {
+            public void onProvisioningSuccess(Provisioning prov, Bundle result) {
                 assertNotNull(result);
                 ArrayList<Bundle> servers = result.getParcelableArrayList(Provisioning.Result.SERVERS);
-                assertTrue(servers!= null && servers.size() > 0);
+                assertTrue(servers != null && servers.size() > 0);
                 Bundle server = servers.get(0);
                 ArrayList<String> ports = server.getStringArrayList(Provisioning.Result.Server.PORTS);
-                assertTrue(ports!= null && ports.size() > 0);
+                assertTrue(ports != null && ports.size() > 0);
             }
 
             @Override
-            public void onProvisioningFailed(Provisioning src, int errorCode)
-            {
+            public void onProvisioningFailed(Provisioning src, int errorCode) {
                 throw new AssertionFailedError("Should not be a fail");
             }
         });
@@ -76,22 +67,17 @@ public class ProvisioningAndroidTest
     }
 
 
-
     @Test
-    public void cannotDoProvisioningWithInvalidMount()
-    {
+    public void cannotDoProvisioningWithInvalidMount() {
         mParser.setMount("ANDROID_STUDIO", "FLV");
-        mParser.setListener(new Provisioning.Listener()
-        {
+        mParser.setListener(new Provisioning.Listener() {
             @Override
-            public void onProvisioningSuccess(Provisioning prov, Bundle result)
-            {
+            public void onProvisioningSuccess(Provisioning prov, Bundle result) {
                 throw new AssertionFailedError("Should not be a success");
             }
 
             @Override
-            public void onProvisioningFailed(Provisioning src, int errorCode)
-            {
+            public void onProvisioningFailed(Provisioning src, int errorCode) {
                 assertTrue(errorCode == Provisioning.ERROR_NOT_FOUND);
             }
         });
@@ -101,20 +87,16 @@ public class ProvisioningAndroidTest
     }
 
     @Test
-    public void cannotDoProvisioningWithEmptyMount()
-    {
+    public void cannotDoProvisioningWithEmptyMount() {
         mParser.setMount("", "FLV");
-        mParser.setListener(new Provisioning.Listener()
-        {
+        mParser.setListener(new Provisioning.Listener() {
             @Override
-            public void onProvisioningSuccess(Provisioning prov, Bundle result)
-            {
+            public void onProvisioningSuccess(Provisioning prov, Bundle result) {
                 throw new AssertionFailedError("Should not be a success");
             }
 
             @Override
-            public void onProvisioningFailed(Provisioning src, int errorCode)
-            {
+            public void onProvisioningFailed(Provisioning src, int errorCode) {
                 assertTrue(errorCode == 0);//
             }
         });
@@ -124,12 +106,9 @@ public class ProvisioningAndroidTest
     }
 
 
-    private void requestProvisioning()
-    {
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
+    private void requestProvisioning() {
+        Runnable r = new Runnable() {
+            public void run() {
                 mParser.request();
             }
         };
@@ -138,12 +117,10 @@ public class ProvisioningAndroidTest
         waitFor(3);
     }
 
-    private void waitFor(long seconds)
-    {
-        try
-        {
+    private void waitFor(long seconds) {
+        try {
             mLatch.await(seconds, TimeUnit.SECONDS);
+        } catch (Exception e) {
         }
-        catch(Exception e){}
     }
 }
