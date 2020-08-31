@@ -5,7 +5,6 @@ import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
 
 import androidx.mediarouter.media.MediaRouter;
@@ -160,7 +159,7 @@ import static android.content.Context.AUDIO_SERVICE;
  *      player.play();
  * @endcode
  */
-@SuppressWarnings({"JavaDoc", "unused"})
+@SuppressWarnings({"JavaDoc"})
 public final class TritonPlayer extends MediaPlayer {
 
     ////////////////////////////////////////////////////////////////////////

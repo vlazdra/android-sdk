@@ -16,7 +16,6 @@ import java.util.ArrayList;
 /**
  * Loads an ad from an ad request.
  */
-@SuppressWarnings("unused")
 public final class AdLoader {
 
     /** A listener for receiving AdLoader notifications */

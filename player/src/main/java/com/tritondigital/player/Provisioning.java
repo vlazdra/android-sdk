@@ -53,9 +53,9 @@ class Provisioning
         public static final String MIME_TYPE = PlayerConstants.MIME_TYPE;
         public static final String MOUNT = PlayerConstants.STATION_MOUNT;
         public static final String MOUNT_SUFFIX = "mount_suffix";
-        public static final String SBM_SUFFIX   = "sbm_suffix";
-        public static final String TRANSPORT    = PlayerConsts.TRANSPORT;
-        public static final String ALTERNATE_URL    = "alternate_url";
+        public static final String SBM_SUFFIX = "sbm_suffix";
+        public static final String TRANSPORT = PlayerConstants.TRANSPORT;
+        public static final String ALTERNATE_URL = "alternate_url";
 
         abstract class Server
         {
