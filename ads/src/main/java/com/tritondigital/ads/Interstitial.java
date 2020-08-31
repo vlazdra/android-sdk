@@ -7,7 +7,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.tritondigital.ads.AdLoader.AdLoaderListener;
-import com.tritondigital.util.*;
+import com.tritondigital.util.AnalyticsTracker;
+import com.tritondigital.util.Assert;
+import com.tritondigital.util.Log;
+import com.tritondigital.util.NetworkUtil;
 
 import java.util.Random;
 
@@ -54,7 +57,7 @@ import java.util.Random;
  * </tr>
  * </table>
  */
-@SuppressWarnings({"JavaDoc", "unused"})
+@SuppressWarnings({"JavaDoc"})
 public final class Interstitial {
 
     /**
