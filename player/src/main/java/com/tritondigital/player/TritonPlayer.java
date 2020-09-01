@@ -185,7 +185,7 @@ public final class TritonPlayer extends MediaPlayer {
     public static final String SETTINGS_STREAM_MIME_TYPE = PlayerConstants.MIME_TYPE;
 
     /* @copydoc PlayerConsts::AUTH_TOKEN
-    */
+     */
     public static final String SETTINGS_AUTH_TOKEN = PlayerConstants.AUTH_TOKEN;
 
     /** @copydoc PlayerConsts::TARGETING_PARAMS */
@@ -228,12 +228,45 @@ public final class TritonPlayer extends MediaPlayer {
     public static final String SETTINGS_PLAYER_SERVICES_REGION = PlayerConstants.PLAYER_SERVICES_REGION;
 
     private final MediaPlayer mPlayer;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final OnCuePointReceivedListener mInOnCuePointReceivedListener = new OnCuePointReceivedListener() {
+        @Override
+        public void onCuePointReceived(MediaPlayer player, Bundle cuePoint) {
+            notifyCuePoint(cuePoint);
+        }
+    };
+    private final OnMetaDataReceivedListener mInOnMetaDataReceivedListener = new OnMetaDataReceivedListener() {
 
+        @Override
+        public void onMetaDataReceived(MediaPlayer player, Bundle metadata) {
+            notifyMetadata(metadata);
+        }
+    };
+    @SuppressWarnings("FieldCanBeLocal")
+    private final OnStateChangedListener mInOnStateChangedListener = new OnStateChangedListener() {
+        @Override
+        public void onStateChanged(MediaPlayer player, int state) {
+            if (state == STATE_ERROR) {
+                setErrorState(player.getLastErrorCode());
+            } else {
+                setState(state);
+            }
+        }
+    };
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Methods forwarded to its delegate
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    @SuppressWarnings("FieldCanBeLocal")
+    private final OnInfoListener mInOnInfoListener = new OnInfoListener() {
+        @Override
+        public void onInfo(MediaPlayer player, int info, int extra) {
+            notifyInfo(info, extra);
+        }
+    };
     private AudioManager mAudioManager;
-
-    private SettingsContentObserver     mSettingsContentObserver;
-
-
+    private SettingsContentObserver mSettingsContentObserver;
 
     /**
      * Constructor
@@ -247,7 +280,7 @@ public final class TritonPlayer extends MediaPlayer {
         // It may take time to get the gaid so we will make the first call here.
         TrackingUtil.getTrackingId(context);
 
-        String mount     = settings.getString(SETTINGS_STATION_MOUNT);
+        String mount = settings.getString(SETTINGS_STATION_MOUNT);
         String streamUrl = settings.getString(SETTINGS_STREAM_URL);
 
         if (!TextUtils.isEmpty(mount) && !TextUtils.isEmpty(streamUrl)) {
@@ -265,42 +298,57 @@ public final class TritonPlayer extends MediaPlayer {
         mPlayer.setOnInfoListener(mInOnInfoListener);
         mPlayer.setOnStateChangedListener(mInOnStateChangedListener);
 
-        mAudioManager = (AudioManager)context.getSystemService(AUDIO_SERVICE);
+        mAudioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
 
-        mSettingsContentObserver = new SettingsContentObserver( new Handler() );
+        mSettingsContentObserver = new SettingsContentObserver(new Handler());
         context.getApplicationContext().getContentResolver().registerContentObserver(
                 android.provider.Settings.System.CONTENT_URI, true,
-                mSettingsContentObserver );
+                mSettingsContentObserver);
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Methods forwarded to its delegate
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public int getDuration() {
+        return mPlayer.getDuration();
+    }
 
     @Override
-    public int getDuration() { return mPlayer.getDuration(); }
+    public Bundle getLastCuePoint() {
+        return mPlayer.getLastCuePoint();
+    }
 
     @Override
-    public Bundle getLastCuePoint() { return mPlayer.getLastCuePoint(); }
+    public int getLastErrorCode() {
+        return mPlayer.getLastErrorCode();
+    }
 
     @Override
-    public int getLastErrorCode() { return mPlayer.getLastErrorCode(); }
+    public int getPosition() {
+        return mPlayer.getPosition();
+    }
 
     @Override
-    public int getPosition() { return mPlayer.getPosition(); }
+    public Bundle getSettings() {
+        return mPlayer.getSettings();
+    }
 
     @Override
-    public Bundle getSettings() { return mPlayer.getSettings(); }
+    public int getState() {
+        return mPlayer.getState();
+    }
 
     @Override
-    public int getState() { return mPlayer.getState(); }
+    public float getVolume() {
+        return mPlayer.getVolume();
+    }
 
     @Override
-    public float getVolume() { return mPlayer.getVolume(); }
+    public void setVolume(float volume) {
+        mPlayer.setVolume(volume);
+    }
 
     @Override
-    protected void internalPause() { mPlayer.pause();
+    protected void internalPause() {
+        mPlayer.pause();
     }
 
     @Override
@@ -310,29 +358,48 @@ public final class TritonPlayer extends MediaPlayer {
     }
 
     @Override
-    protected void internalRelease() { mPlayer.release(); }
+    protected void internalRelease() {
+        mPlayer.release();
+    }
 
     @Override
-    protected void internalSeekTo(int position) { mPlayer.seekTo(position); }
+    protected void internalSeekTo(int position) {
+        mPlayer.seekTo(position);
+    }
 
     @Override
-    protected void internalStop() { mPlayer.stop(); }
+    protected void internalStop() {
+        mPlayer.stop();
+    }
 
     @Override
-    public boolean isSeekable() { return mPlayer.isSeekable(); }
+    public boolean isSeekable() {
+        return mPlayer.isSeekable();
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Station Player
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public boolean isPausable() { return mPlayer.isPausable(); }
+    public boolean isPausable() {
+        return mPlayer.isPausable();
+    }
 
     @Override
-    public void setVolume(float volume) { mPlayer.setVolume(volume); }
+    protected String makeTag() {
+        return Log.makeTag("TritonPlayer");
+    }
 
     @Override
-    protected String makeTag() { return Log.makeTag("TritonPlayer"); }
+    protected boolean isEventLoggingEnabled() {
+        return true;
+    }
 
-    @Override
-    protected boolean isEventLoggingEnabled() { return true; }
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Listeners
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Sets the <a href="http://developer.android.com/reference/android/support/v7/media/MediaRouter.RouteInfo.html">media route</a> to use for the current player instance.
@@ -348,11 +415,6 @@ public final class TritonPlayer extends MediaPlayer {
         }
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Station Player
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Returns the alternate mount used if the station is using content blocking.
      */
@@ -361,69 +423,34 @@ public final class TritonPlayer extends MediaPlayer {
                 ? ((StationPlayer) mPlayer).getAlternateMount() : null;
     }
 
-
     /**
      * Returns the Side Band MetaData Url.
      */
-    public String getSideBandMetadataUrl()
-    {
+    public String getSideBandMetadataUrl() {
         return (mPlayer instanceof StationPlayer)
                 ? ((StationPlayer) mPlayer).getSideBandMetadataUrl() : null;
     }
 
-
     /**
      * Returns the Stream URL to cast to Google Cast devices.
      */
-    public String getCastStreamingUrl()
-    {
+    public String getCastStreamingUrl() {
         if (mPlayer instanceof StationPlayer) {
-            return ((StationPlayer) mPlayer).getCastStreamingUrl() ;
+            return ((StationPlayer) mPlayer).getCastStreamingUrl();
         } else {
-           return  ((StreamPlayer) mPlayer).getSettings().getString(StreamPlayer.SETTINGS_STREAM_URL);
+            return ((StreamPlayer) mPlayer).getSettings().getString(StreamPlayer.SETTINGS_STREAM_URL);
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Listeners
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final OnCuePointReceivedListener mInOnCuePointReceivedListener = new OnCuePointReceivedListener() {
-        @Override
-        public void onCuePointReceived(MediaPlayer player, Bundle cuePoint) {
-            notifyCuePoint(cuePoint);
+    private void checkVolume() {
+        int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (volume == 0) {
+            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            float percent = 0.1f;
+            int minVolume = Math.round(maxVolume * percent);
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minVolume, 0);
         }
-    };
-
-    private final OnMetaDataReceivedListener mInOnMetaDataReceivedListener = new OnMetaDataReceivedListener() {
-
-        @Override
-        public void onMetaDataReceived(MediaPlayer player, Bundle metadata) {
-            notifyMetadata(metadata);
-        }
-    };
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final OnStateChangedListener mInOnStateChangedListener = new OnStateChangedListener() {
-        @Override
-        public void onStateChanged(MediaPlayer player, int state) {
-            if (state == STATE_ERROR) {
-                setErrorState(player.getLastErrorCode());
-            } else {
-                setState(state);
-            }
-        }
-    };
-
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final OnInfoListener mInOnInfoListener = new OnInfoListener() {
-        @Override
-        public void onInfo(MediaPlayer player, int info, int extra) {
-            notifyInfo(info, extra);
-        }
-    };
+    }
 
     private class SettingsContentObserver extends ContentObserver {
 
@@ -440,19 +467,9 @@ public final class TritonPlayer extends MediaPlayer {
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            if(volume == 0) {
+            if (volume == 0) {
                 pause();
             }
-        }
-    }
-
-    private void checkVolume() {
-        int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        if(volume == 0) {
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            float percent = 0.1f;
-            int minVolume = Math.round(maxVolume * percent) ;
-            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minVolume, 0);
         }
     }
 }

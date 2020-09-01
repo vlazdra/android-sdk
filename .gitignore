@@ -15,7 +15,7 @@ tdsdk/libs/*.aar
 tdsdk/libs/*.jar
 tdsdk/docs/html
 
-util/src/main/java/com/tritondigital/util/SdkUtil.java
-
 /generated
 /tmp
+
+local.properties

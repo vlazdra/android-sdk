@@ -9,6 +9,10 @@ android {
         minSdkVersion TRITONSDK_MIN_SDK_VERSION.toInteger()
         targetSdkVersion TARGET_SDK_VERSION.toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The SDK version is constructed in the build.gradle file inside the root of the project
+        // and added to the BuildConfig of this module so that other
+        buildConfigField "String", "TRITON_VERSION", "\"${rootProject.ext.tritonSDKVersion}\""
     }
 
     buildTypes {
@@ -37,15 +41,4 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test:rules:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-}
-
-task SdkUtilVersion {
-    version = rootProject.ext.tritonSDKVersion
-    logger.info("Create SdkUtil.java with version : ${version}")
-    def file = new File("util/src/main/java/com/tritondigital/util/SdkUtil.java")
-    file.createNewFile()
-    file.text = """//Auto-generated file. Do not edit.
-    package com.tritondigital.util;
-    public final class SdkUtil { public static final String VERSION = "$version";
-    private SdkUtil() {}}"""
 }

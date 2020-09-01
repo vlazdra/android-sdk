@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/vlazdra/triton-android-sdk.svg)](https://jitpack.io/#vlazdra/triton-android-sdk) [![MASTER STATUS](https://circleci.com/gh/vlazdra/triton-android-sdk.svg?style=shield&logo=appveyor)](<LINK>)
+
 # Triton Digital® Mobile SDK for Android
 
 The Triton Digital® Mobile SDK is designed to help you play your radio station or display on-demand advertisements very easily in your own application. There are two (2) versions of the mobile SDK; one for Android and one for iOS. This is the Android version.
@@ -48,7 +50,7 @@ In order to build the SDK, you will need to run the following command via the te
 root of the project:
 
 ``` bash
-./gradlew sdkCopy
+./gradlew sdk
 ```
 
 Based on the `build.gradle` in the root of the project, that specific task depends on the `buildSdk`

@@ -1,6 +1,5 @@
 package com.tritondigital.util;
 
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Random;
-
 
 public class AnalyticsTracker {
     private static final String TAG = "AnalyticsTracker";
@@ -39,7 +37,6 @@ public class AnalyticsTracker {
     private static final String GA_VERSION = "1";
     private static final String GA_DEBUG_TRACKER_ID = "";
     private static final String GA_RELEASE_TRACKER_ID = "";
-    private static final String SDK_VERSION = SdkUtil.VERSION;
     private static final String SDK_MAJOR_VERIONS = getSdkMajorVersion();
     private static final String SDK_NAME = "android-sdk";
     private static final String SDK_CATEGORY_TRITON = "player";
@@ -200,7 +197,7 @@ public class AnalyticsTracker {
         addQueryParameter(KEY_APP_NAME, SDK_NAME);
 
         //App version
-        addQueryParameter(KEY_APP_VERSION, SDK_VERSION);
+        addQueryParameter(KEY_APP_VERSION, SdkUtil.VERSION);
 
         //App Major version
         addQueryParameter(KEY_APP_MAJOR_VERSION, SDK_MAJOR_VERIONS);
@@ -243,7 +240,7 @@ public class AnalyticsTracker {
 
 
     private static String getSdkMajorVersion() {
-        return TextUtils.substring(SDK_VERSION, 0, 3);
+        return TextUtils.substring(SdkUtil.VERSION, 0, 3);
     }
 
 
