@@ -50,7 +50,7 @@ In order to build the SDK, you will need to run the following command via the te
 root of the project:
 
 ``` bash
-./gradlew sdkCopy
+./gradlew sdk
 ```
 
 Based on the `build.gradle` in the root of the project, that specific task depends on the `buildSdk`
