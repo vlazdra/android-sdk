@@ -227,8 +227,6 @@ public final class TritonPlayer extends MediaPlayer {
     /** @copybrief PlayerConsts::PLAYER_SERVICES_REGION */
     public static final String SETTINGS_PLAYER_SERVICES_REGION = PlayerConstants.PLAYER_SERVICES_REGION;
 
-    public static final String TRITON_VERSION = BuildConfig.TRITON_VERSION;
-
     private final MediaPlayer mPlayer;
     @SuppressWarnings("FieldCanBeLocal")
     private final OnCuePointReceivedListener mInOnCuePointReceivedListener = new OnCuePointReceivedListener() {

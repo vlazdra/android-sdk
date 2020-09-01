@@ -9,8 +9,6 @@ android {
         minSdkVersion TRITONSDK_MIN_SDK_VERSION.toInteger()
         targetSdkVersion TARGET_SDK_VERSION.toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField "String", "TRITON_VERSION", "\"${rootProject.ext.tritonSDKVersion}\""
     }
 
     buildTypes {
