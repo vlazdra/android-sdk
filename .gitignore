@@ -19,3 +19,5 @@ util/src/main/java/com/tritondigital/util/SdkUtil.java
 
 /generated
 /tmp
+
+local.properties
