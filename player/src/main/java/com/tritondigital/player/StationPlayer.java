@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.mediarouter.media.MediaRouter;
 
-import com.tritondigital.util.AnalyticsTracker;
 import com.tritondigital.util.Log;
 import com.tritondigital.util.NetworkUtil;
 import com.tritondigital.util.SdkUtil;

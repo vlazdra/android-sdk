@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.tritondigital.ads.AdLoader.AdLoaderListener;
-import com.tritondigital.util.AnalyticsTracker;
 import com.tritondigital.util.Assert;
 import com.tritondigital.util.Log;
 import com.tritondigital.util.NetworkUtil;

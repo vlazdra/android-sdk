@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.mediarouter.media.MediaRouter;
 
-import com.tritondigital.util.AnalyticsTracker;
 import com.tritondigital.util.Assert;
 import com.tritondigital.util.Log;
 import com.tritondigital.util.NetworkUtil;
