@@ -133,7 +133,8 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener {
         setState(STATE_CONNECTING);
 
         // Network error check
-        if (!NetworkUtil.isNetworkConnected(getContext())) {
+        String streamUrl = mSettings.getString(SETTINGS_STREAM_URL);
+        if (streamUrl != null && streamUrl.startsWith("http") && !NetworkUtil.isNetworkConnected(getContext())) {
             setErrorState(ERROR_NO_NETWORK);
             return;
         }
@@ -346,7 +347,7 @@ public class TdExoPlayer extends MediaPlayer implements TdMetaDataListener {
 
         private final Context mContext;
         private final MainHandler mMainHandler;
-        private final Bundle mSettings;
+        protected final Bundle mSettings;
 
         private static final String TAG = Log.makeTag("ExoPlayerBkg");
 
