@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.mediarouter.media.MediaRouter;
 
-import com.tritondigital.util.AnalyticsTracker;
 import com.tritondigital.util.Assert;
 import com.tritondigital.util.Log;
 import com.tritondigital.util.NetworkUtil;
@@ -394,20 +393,6 @@ public class StreamPlayer extends MediaPlayer {
                     default:
                         Assert.failUnhandledValue(TAG, debugStateToStr(state), "mInputOnStateChangedListener");
                         break;
-                }
-
-                if(isSeekable())
-                {
-                   if(state == STATE_PLAYING)
-                   {
-                       //Google Analytics: track On demand Play success
-                       AnalyticsTracker.getTracker(getContext()).trackOnDemandPlaySuccess();
-                   }
-                   else if(state == STATE_ERROR)
-                   {
-                       //Google Analytics: track On demand Play Error
-                       AnalyticsTracker.getTracker(getContext()).trackOnDemandPlayError();
-                   }
                 }
             }
         }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import com.tritondigital.util.Assert;
 import com.tritondigital.util.Log;
-import com.tritondigital.util.AnalyticsTracker;
 
 /**
  * Base class for a media player.
@@ -186,7 +185,7 @@ public abstract class MediaPlayer {
     protected final String TAG = makeTag();
     private static final String STATIC_TAG = Log.makeTag("MediaPlayer");
     private final Context mContext;
-    private final Bundle  mSettings;
+    protected final Bundle  mSettings;
 
     // Listeners.
     private OnCuePointReceivedListener mCuePointListener;
@@ -231,9 +230,6 @@ public abstract class MediaPlayer {
         // Creating a copy in case the client tries to update the bundle
         // after creating this class.
         mSettings = new Bundle(settings);
-
-        //Initialize Google Analytics Tracker
-        AnalyticsTracker.getTracker(context).initialize();
     }
 
     /**

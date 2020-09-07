@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.mediarouter.media.MediaRouter;
 
-import com.tritondigital.util.AnalyticsTracker;
 import com.tritondigital.util.Log;
 import com.tritondigital.util.NetworkUtil;
 import com.tritondigital.util.SdkUtil;
@@ -69,7 +68,6 @@ public class StationPlayer extends MediaPlayer {
         }
 
         mConnectionClient.start();
-        AnalyticsTracker.getTracker(getContext()).startTimer();
     }
 
 
@@ -180,29 +178,6 @@ public class StationPlayer extends MediaPlayer {
         @Override
         public void onStationConnectionError(StationConnectionClient src, int errorCode) {
             setErrorState(errorCode);
-
-            //Google analytics  :track connection time
-            AnalyticsTracker tracker = AnalyticsTracker.getTracker(getContext());
-            long connectionTime = tracker.stopTimer();
-            String mount = getSettings().getString(SETTINGS_STATION_MOUNT);
-            String broadcaster = getSettings().getString(SETTINGS_STATION_BROADCASTER);
-            switch (errorCode) {
-                case ERROR_CONNECTION_FAILED:
-                    tracker.trackStreamingConnectionFailed(mount, broadcaster, connectionTime);
-                    break;
-                case ERROR_GEOBLOCKED:
-                    tracker.trackStreamingConnectionGeoBlocked(mount, broadcaster, connectionTime);
-                    break;
-                case ERROR_SERVICE_UNAVAILABLE:
-                    tracker.trackStreamingConnectionUnavailable(mount, broadcaster, connectionTime);
-                    break;
-                case ERROR_CONNECTION_TIMEOUT:
-                    tracker.trackStreamingConnectionFailed(mount, broadcaster, connectionTime);
-                    break;
-                case ERROR_NOT_FOUND:
-                    tracker.trackStreamingConnectionUnavailable(mount, broadcaster, connectionTime);
-                    break;
-            }
         }
 
 
@@ -336,18 +311,6 @@ public class StationPlayer extends MediaPlayer {
 
                     break;
                 }
-            }
-
-            AnalyticsTracker tracker = AnalyticsTracker.getTracker(getContext());
-            long connectionTime = tracker.stopTimer();
-            String mount = getSettings().getString(SETTINGS_STATION_MOUNT);
-            String broadcaster = getSettings().getString(SETTINGS_STATION_BROADCASTER);
-            if (state == STATE_CONNECTING) {
-                //Google analytics  :track connection time
-                tracker.trackStreamingConnectionSuccess(mount, broadcaster, connectionTime);
-            } else if (state == STATE_ERROR) {
-                //Google analytics  :track connection time
-                tracker.trackStreamingConnectionError(mount, broadcaster, connectionTime);
             }
         }
     };
