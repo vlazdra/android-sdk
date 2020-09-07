@@ -25,11 +25,23 @@ And in your app level _build.gradle_ please add:
 
 ``` gradle
 dependencies {
-    implementation 'com.github.vlazdra:triton-android-sdk:1.0.0'
+    implementation 'com.github.vlazdra:triton-android-sdk:1.0.1'
 }
 ```
 
 For the latest version of the SDK you can see check the [GitHub release page](https://github.com/vlazdra/triton-android-sdk/releases), or the JitPack badge up top.
+
+# Differences
+
+Notable differences between the original and this forked repo are:
+
+|         | ORIGINAL | THIS FORK |
+| ------------- |:-------------:|:-----:|
+| Minimum SDK API Level   | 14 | 16        |
+| Target SDK API Level   | 27      |   29 |
+| Compile SDK API Level   | 27      |   29 |
+| AndroidX supported | No      |   Yes |
+| Distributed via Maven | No      |   Yes |
 
 # Integrating bleeding edge
 
