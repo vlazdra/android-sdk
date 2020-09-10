@@ -25,7 +25,7 @@ And in your app level _build.gradle_ please add:
 
 ``` gradle
 dependencies {
-    implementation 'com.github.vlazdra:triton-android-sdk:1.0.1'
+    implementation 'com.github.vlazdra:triton-android-sdk:1.0.2'
 }
 ```
 
